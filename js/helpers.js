@@ -38,14 +38,16 @@ function debugLog(...args) {
 
 function dealDamage(amount, target, source = null, type = 'attack') {
     source = source || { id: 'null:null', name: 'Null' };
-    const eventData = { amount, type, source, target };
+    const eventData = { amount, type, source: deepClone(source), target: deepClone(target) };
     game.ee.emit('damage', eventData);
     if (eventData.amount > 0) target.hitPoints -= eventData.amount;
     return eventData.amount;
 }
 
 function roll(max = 6, min = 1) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+    const result = Math.floor(Math.random() * (max - min + 1) + min);
+    debugLog(`roll [ ${min} ~ ${max} ] = ${result}`);
+    return result;
 }
 
 function randomArrayItem(array) {

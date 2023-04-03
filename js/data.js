@@ -15,7 +15,7 @@ data.class.swordman = {
     init(unit) {
         // takes -1 damage from creatures
         game.ee.on('damage', function (evt) {
-            if (evt.target.id === 'swordman' && evt.type === 'attack') {
+            if (evt.type === 'attack' && evt.target.id === 'swordman') {
                 evt.amount -= 1;
             }
         });
@@ -34,6 +34,7 @@ data.class.rogue = {
     init(unit) {
         // deals double damage in peons and grunts
         game.ee.on('damage', function (evt) {
+        	if ('attack' !== evt.type) return;
             if (['grunt', 'peon'].includes(evt.target.id)) {
                 evt.amount *= 2;
             }
@@ -53,6 +54,7 @@ data.class.hunter = {
     init(unit) {
         // deals +4 damage on first attack in every combat
         game.ee.on('damage', function (evt) {
+        	if ('attack' !== evt.type) return;
             if (evt.source.id === 'hunter' && !evt.source.flags.attacked) {
                 evt.source.flags.attacked = true;
                 evt.amount += 4;
