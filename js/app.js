@@ -7,30 +7,46 @@ async function gameLoop() {
     createGame({
         playerClass: urlParams.get('class') || undefined,
         debug: urlParams.get('debug'),
+        actionInterval: 500,
     });
 
     const player = game.player;
-    const enemy = createCreature();
+    const enemies = createCreatureGroup();
+    // debugLog(game.scene.enemies);
+    // debugLog(getCreatureGroupName(game.scene.enemies));
+    // debugLog(getTarget(game.scene.enemies));
 
-    logger(`${player.name} vs ${enemy.name}`);
+    logger(`${player.name} vs ${getCreatureGroupName(enemies)}`);
     let rounds = 1;
 
     while (true) {
+        await wait(game.args.actionInterval);
+        const enemy = getTargets(enemies)[0];
+
+        if (!enemy) break;
+
         logger(`=== Round ${rounds++} ===`);
-        logger(`Player HP: ${player.hitPoints}`);
-        logger(`Enemy HP: ${enemy.hitPoints}`);
+        logger(`Player hitPoints: ${player.hitPoints}/${player.hitPointsMax}`);
 
-        await wait(500);
-        logger(`Player deals ${attack(player, enemy)} damage`);
-        if (enemy.dead()) break;
+        logger(
+            `Player attack ${enemy.name} and
+            deal ${player.attack(enemy)} damage`
+        );
 
-        await wait(500);
-        logger(`Enemy deals ${attack(enemy, player)} damage`);
-        if (player.dead()) break;
+        for (const enemy of enemies) {
+            if (enemy.dead) continue;
+            await wait(game.args.actionInterval);
+            logger(
+                `${enemy.name} attack the player and
+                deal ${enemy.attack(player)} damage`
+            );
+            if (player.dead) break;
+        }
+        if (player.dead) break;
     }
 
-    if (player.dead()) {
-        logger(`Enemy win!`);
+    if (player.dead) {
+        logger(`Enemies win!`);
     } else {
         logger(`Player win!`);
     }

@@ -1,22 +1,27 @@
 // THE GAME
 function createGame(args) {
     window.game = {
-        debug: !!args.debug,
-        parts: {
-            current: 1,
-            max: 0,
-        },
+        dungeonSize: null,
         scene: {
+            count: 1,
             type: null,
             enemies: null,
         },
         player: null,
         ee: null, // ee = event emittr
         init() {
+            this.args = this.parseArgs(args);
             this.ee = createNanoEvents();
+
             this.player = createPlayer(args.playerClass);
-            this.parts.max = roll() + 9;
+            this.dungeonSize = roll() + 9;
+
             this.ee.emit('game_init');
+        },
+        parseArgs(args) {
+            args.debug = !!args.debug;
+            args.actionInterval = parseInt(args.actionInterval, 10) | 0;
+            return args;
         },
         createScene() {},
     };
@@ -33,12 +38,17 @@ function logger(msg) {
 }
 
 function debugLog(...args) {
-    if (game.debug) console.log(...args);
+    if (game.args.debug) console.log(...args);
 }
 
 function dealDamage(amount, target, source = null, type = 'attack') {
     source = source || { id: 'null:null', name: 'Null' };
-    const eventData = { amount, type, source: deepClone(source), target: deepClone(target) };
+    const eventData = {
+        amount,
+        type,
+        source: deepClone(source),
+        target: deepClone(target),
+    };
     game.ee.emit('damage', eventData);
     if (eventData.amount > 0) target.hitPoints -= eventData.amount;
     return eventData.amount;
@@ -55,8 +65,32 @@ function randomArrayItem(array) {
     return array[index];
 }
 
+function createUnitObject(data) {
+    debugLog('creating', data.id);
+    const values = deepClone(data);
+    const obj = {
+        ...values,
+        hitPointsMax: values.hitPoints,
+
+        // use the .flags to store status and temporary informations
+        flags: {},
+
+        // check if a unit are alive or dead
+        get dead() {
+            return this.hitPoints <= 0;
+        },
+
+        // attack another unit
+        attack(target) {
+            return attack(this, target);
+        },
+    };
+    if (data.init) data.init(obj);
+    return obj;
+}
+
 function createPlayer(id) {
-    const obj = createObject(getClass(id));
+    const obj = createUnitObject(getClass(id));
     obj.spells = {};
     obj.scrolls = {};
     obj.potions = 0;
@@ -64,22 +98,38 @@ function createPlayer(id) {
 }
 
 function createCreature(id) {
-    return createObject(getCreature(id));
+    return createUnitObject(getCreature(id));
 }
 
-function createObject(data) {
-    debugLog('creating', data.id);
-    const values = deepClone(data);
-    const obj = {
-        ...values,
-        flags: {},
-        dead() {
-            return this.hitPoints <= 0;
-        },
-    };
+function createCreatureGroup(index = -1) {
+    const groupList = [
+        ['peon'],
+        ['peon', 'peon'],
+        ['peon', 'peon', 'peon'],
+        ['grunt'],
+        ['grunt', 'peon', 'peon'],
+        ['brute'],
+    ];
+    const group = [];
+    const selected = groupList[index] || randomArrayItem(groupList);
+    for (const id of selected) {
+        group.push(createCreature(id));
+    }
+    return group;
+}
 
-    if (data.init) data.init(obj);
-    return obj;
+function getCreatureGroupName(group) {
+    const counter = {};
+    const names = [];
+    for (const creature of group) {
+        counter[creature.name] = (counter[creature.name] || 0) + 1;
+    }
+    for (const name in counter) {
+        const number = counter[name];
+        const s = number > 1 && 'Peon' === name ? 's' : '';
+        names.push(`${number} ${name + s}`);
+    }
+    return names.join(' and ');
 }
 
 function getCreature(id = 'random') {

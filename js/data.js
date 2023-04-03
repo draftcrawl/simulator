@@ -34,7 +34,7 @@ data.class.rogue = {
     init(unit) {
         // deals double damage in peons and grunts
         game.ee.on('damage', function (evt) {
-        	if ('attack' !== evt.type) return;
+            if ('attack' !== evt.type) return;
             if (['grunt', 'peon'].includes(evt.target.id)) {
                 evt.amount *= 2;
             }
@@ -54,14 +54,16 @@ data.class.hunter = {
     init(unit) {
         // deals +4 damage on first attack in every combat
         game.ee.on('damage', function (evt) {
-        	if ('attack' !== evt.type) return;
-            if (evt.source.id === 'hunter' && !evt.source.flags.attacked) {
-                evt.source.flags.attacked = true;
+            if ('attack' !== evt.type) return;
+            if (evt.source.id === 'hunter' && !game.player.flags.attacked) {
+                debugLog('HUNTER FIRST ATTACK BONUS APPLIED!');
+                game.player.flags.attacked = true;
                 evt.amount += 4;
             }
         });
         game.ee.on('combat_begin', function (evt) {
-            evt.source.flags.attacked = false;
+            if (evt.source.id !== 'hunter') return;
+            game.player.flags.attacked = false;
         });
     },
 };
