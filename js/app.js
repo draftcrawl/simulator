@@ -1,27 +1,37 @@
 // document.addEventListener('alpine:init', () => {});
 
-createGame('hunter');
+gameLoop();
 
-const player = game.player;
-const enemy = createUnit(data.creature.brute);
+async function gameLoop() {
+    const urlParams = new URLSearchParams(window.location.search);
+    createGame({
+        playerClass: urlParams.get('class') || undefined,
+        debug: urlParams.get('debug'),
+    });
 
-logger(`${player.data.name} vs ${enemy.data.name}`);
-let rounds = 1;
+    const player = game.player;
+    const enemy = createCreature();
 
-while (true) {
-    logger(`=== Round ${rounds++} ===`);
-    logger(`Player HP: ${player.hitPoints}`);
-    logger(`Enemy HP: ${enemy.hitPoints}`);
+    logger(`${player.name} vs ${enemy.name}`);
+    let rounds = 1;
 
-    logger(`Player deals ${attack(player, enemy)} damage`);
-    if (enemy.dead()) break;
+    while (true) {
+        logger(`=== Round ${rounds++} ===`);
+        logger(`Player HP: ${player.hitPoints}`);
+        logger(`Enemy HP: ${enemy.hitPoints}`);
 
-    logger(`Enemy deals ${attack(enemy, player)} damage`);
-    if (player.dead()) break;
-}
+        await wait(500);
+        logger(`Player deals ${attack(player, enemy)} damage`);
+        if (enemy.dead()) break;
 
-if (player.dead()) {
-    logger(`Enemy win!`);
-} else {
-    logger(`Player win!`);
+        await wait(500);
+        logger(`Enemy deals ${attack(enemy, player)} damage`);
+        if (player.dead()) break;
+    }
+
+    if (player.dead()) {
+        logger(`Enemy win!`);
+    } else {
+        logger(`Player win!`);
+    }
 }
