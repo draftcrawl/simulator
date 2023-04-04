@@ -8,3 +8,9 @@ function getTargets(group, quantity = 1) {
     const ordered = alive.sort((a, b) => a.hitPoints - b.hitPoints);
     return ordered.slice(0, quantity);
 }
+
+function drinkPotion() {}
+
+function castSpell() {}
+
+function readMagicScroll() {}

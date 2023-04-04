@@ -1,3 +1,11 @@
+function isBrowser() {
+    return typeof window !== 'undefined';
+}
+
+if (isBrowser()) {
+    window.global = window;
+}
+
 // https://github.com/ai/nanoevents v7.0.1
 const createNanoEvents = () => ({
     events: {},

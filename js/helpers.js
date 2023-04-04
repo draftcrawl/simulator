@@ -1,56 +1,28 @@
-// THE GAME
-function createGame(args) {
-    window.game = {
-        dungeonSize: null,
-        scene: {
-            count: 1,
-            type: null,
-            enemies: null,
-        },
-        player: null,
-        ee: null, // ee = event emittr
-        init() {
-            this.args = this.parseArgs(args);
-            this.ee = createNanoEvents();
-
-            this.player = createPlayer(args.playerClass);
-            this.dungeonSize = roll() + 9;
-
-            this.ee.emit('game_init');
-        },
-        parseArgs(args) {
-            args.debug = !!args.debug;
-            args.actionInterval = parseInt(args.actionInterval, 10) | 0;
-            return args;
-        },
-        createScene() {},
-    };
-    window.game.init();
-    return window.game;
-}
-
-const loggerElement = document.querySelector('#app');
-function logger(msg) {
-    const el = document.createElement('p');
-    el.textContent = msg;
-    loggerElement.appendChild(el);
-    document.documentElement.scrollTop = 9999999;
+function isFunction(func) {
+    return 'function' === typeof func ? func : false;
 }
 
 function debugLog(...args) {
     if (game.args.debug) console.log(...args);
 }
 
-function dealDamage(amount, target, source = null, type = 'attack') {
+function dealDamage(amount, target, source = null, type = null) {
     source = source || { id: 'null:null', name: 'Null' };
+    type = type || null;
     const eventData = {
         amount,
         type,
         source: deepClone(source),
         target: deepClone(target),
     };
+    game.ee.emit('damage:before', eventData);
     game.ee.emit('damage', eventData);
+    game.ee.emit('damage:after', eventData);
+
     if (eventData.amount > 0) target.hitPoints -= eventData.amount;
+
+    game.ee.emit('damaged', deepClone(eventData));
+
     return eventData.amount;
 }
 
@@ -160,7 +132,17 @@ function getSpell(id = 'random') {
 }
 
 async function wait(ms) {
+    if (ms <= 0) return;
     return new Promise((resolve) => {
         setTimeout(() => resolve(), ms);
     });
+}
+
+function getSceneType(type = null) {
+    const types = ['combat', 'event'];
+    return types.includes(type) ? type : randomArrayItem(types);
+}
+
+function getHitPointsText(unit) {
+    return `${Math.max(unit.hitPoints, 0)}/${unit.hitPointsMax}`;
 }

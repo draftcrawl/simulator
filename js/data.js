@@ -1,4 +1,4 @@
-window.data = window.data || {};
+global.data = {};
 
 // CLASSES
 data.class = {};
