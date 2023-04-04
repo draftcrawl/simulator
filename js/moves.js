@@ -3,12 +3,30 @@ function attack(source, target) {
     return dealDamage(amount, target, source, 'attack');
 }
 
-function getTargets(group, quantity = 1, type = null) {
-    const alive = group.filter((obj) => !obj.dead);
-    const ordered = alive.sort((a, b) => a.hitPoints - b.hitPoints);
-    const eventData = { quantity, type };
+function getTargets(unitGroup, quantity = 1, type = null, order = 'ASC') {
+    const alive = unitGroupAlive(unitGroup);
+
+    let eventData = { order, type };
+    game.ee.emit('get_targets_order', eventData);
+    const compare =
+        'ASC' === eventData.order
+            ? (a, b) => a.hitPoints - b.hitPoints
+            : (a, b) => b.hitPoints - a.hitPoints;
+    const ordered = alive.sort(compare);
+
+    eventData = { quantity, type };
     game.ee.emit('get_number_of_targets', eventData);
-    return ordered.slice(0, eventData.quantity);
+    quantity = eventData.quantity;
+
+    return ordered.slice(0, quantity);
+}
+
+function getEnemy(id) {
+    const enemies = game.scene.enemies.filter((unit) => unit.id === id);
+    const alive = unitGroupAlive(enemies);
+    const compare = (a, b) => a.hitPoints - b.hitPoints;
+    const ordered = alive.sort(compare);
+    return ordered.slice(0, 1).pop();
 }
 
 function drinkPotion() {
@@ -22,14 +40,19 @@ function drinkPotion() {
 function castSpell(id) {
     const spell = getSpell(id);
     if (!hasSpell(id)) {
-        throw new Error('Not found spell or scroll of ' + spell.name);
+        throw new Error(
+            'Player does not have spell or scroll of ' + spell.name
+        );
     }
 }
 
 function throwAcid(target) {
     // only alchemists
     if ('alchemist' !== game.player.id) return;
-    const damage = roll() + 10;
-    player.potions--;
-    return dealDamage(damage, target, game.player, 'alchemist_acid');
+
+    game.player.potions--;
+    const damage = roll() + data.class.alchemist.damageAcid;
+
+    game.ee.emit('alchemist_acid', { source: game.player, target });
+    return dealDamage(damage, target, game.player, 'alchemist:acid');
 }

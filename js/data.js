@@ -3,27 +3,16 @@ global.data = {};
 // CLASSES
 data.class = {};
 
-data.class.gameMaster = {
-    name: 'Game Master',
-    type: 'class',
-    id: 'gameMaster',
-    hitPoints: 100,
-    damage: {
-        bonus: 10,
-        fixed: false,
-    },
-    init() {
-        // learns 2 random spells on game init
-        game.ee.on('player_created', function (evt) {
-            evt.player.potions = 5;
-            evt.player.scrolls.fireball = 5;
-            evt.player.scrolls.freezingRay = 5;
-            evt.player.scrolls.heal = 5;
-            evt.player.scrolls.lightning = 5;
-            evt.player.scrolls.lifeSteal = 5;
-        });
-    },
-};
+// data.class.gameMaster = {
+//     name: 'Game Master',
+//     type: 'class',
+//     id: 'gameMaster',
+//     hitPoints: 100,
+//     damage: {
+//         bonus: 10,
+//         fixed: false,
+//     },
+// };
 
 data.class.swordman = {
     name: 'Swordman',
@@ -159,6 +148,7 @@ data.class.alchemist = {
         bonus: 1,
         fixed: false,
     },
+    damageAcid: 10,
     init() {
         // start the game with 1 potion
         game.ee.on('player_created', function (evt) {

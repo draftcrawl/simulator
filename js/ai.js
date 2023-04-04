@@ -2,21 +2,45 @@ function decidePlayerAction() {
     const scene = game.scene;
     const player = game.player;
     const hp = player.hitPoints;
-    const max = player.hitPointsMax;
+    const enemies = scene.enemies;
 
-    if (
-        scene.type === 'combat' &&
-        player.potions > 0 &&
-        hp <= nextEnemiesDamage(scene.enemies)
-    ) {
+    if (player.potions > 0 && hp <= nextEnemiesDamage(enemies)) {
         drinkPotion();
+    } else if (
+        player.id === 'alchemist' &&
+        player.potions > 1 &&
+        facingEnemy('brute') &&
+        getEnemy('brute').hitPoints >= 9
+    ) {
+        const target = getEnemy('brute');
+        throwAcid(target);
+    } else if (
+        player.id === 'alchemist' &&
+        player.potions > 1 &&
+        facingEnemy('boss') &&
+        getEnemy('boss').hitPoints >= 2
+    ) {
+        const target = getEnemy('boss');
+        throwAcid(target);
     } else {
         // attack the enemies
-        const targets = getTargets(scene.enemies, 1, 'attack');
+        const targets = getTargets(enemies, 1, 'attack');
         for (const target of targets) {
             attackEnemy(target);
         }
     }
+}
+
+function facingEnemy(...ids) {
+    const enemies = game.scene.enemies;
+    if (!enemies) return false;
+    for (const id of ids) {
+        for (const enemy of enemies) {
+            if (enemy.dead) continue;
+            if (enemy.id === id) return true;
+        }
+    }
+    return false;
 }
 
 function attackEnemy(target) {

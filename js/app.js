@@ -3,6 +3,7 @@ const mult = urlParams.get('mult') | 0;
 
 if (!mult) {
     createGame({
+        gm: urlParams.get('gm'),
         playerClass: urlParams.get('class') || undefined,
         debug: urlParams.get('debug'),
         actionInterval: urlParams.get('i') || 1000,
@@ -27,6 +28,7 @@ if (!mult) {
             return displayResults();
         }
         createGame({
+            gm: urlParams.get('gm'),
             playerClass: urlParams.get('class') || undefined,
             debug: urlParams.get('debug'),
             actionInterval: 0,

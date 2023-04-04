@@ -37,6 +37,10 @@ function randomArrayItem(array) {
     return array[index];
 }
 
+function unitGroupAlive(group) {
+    return group.filter((unit) => !unit.dead);
+}
+
 function createCreatureGroup(index = -1) {
     const groupList = [
         ['peon'],

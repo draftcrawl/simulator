@@ -1,7 +1,6 @@
 let nextUID = 1;
 
 function createUnitObject(data) {
-    debugLog('creating', data.id);
     const values = deepClone(data);
     const obj = {
         ...values,

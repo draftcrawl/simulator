@@ -10,12 +10,14 @@ function createGame(args) {
             args = this.args = this.parseArgs(args);
 
             this.ee = createNanoEvents();
+            this.globalEvents();
+
             this.player = createPlayer(args.playerClass);
             this.dungeonSize = roll() + 9;
             this.sceneCount = 1;
 
             if (args.beforeInit) args.beforeInit(this);
-            this.globalEvents();
+
             this.ee.emit('game_init');
 
             this.run();
@@ -51,9 +53,22 @@ function createGame(args) {
                 // reset the spells cast
                 game.player.spellsCast = {};
             });
+            this.ee.on('player_created', (evt) => {
+                if (game.args.gm) {
+                    evt.player.hitPoints = evt.player.hitPoints * 3;
+                    evt.player.hitPointsMax = evt.player.hitPoints;
+                    evt.player.potions = 5;
+                    evt.player.scrolls.fireball = 5;
+                    evt.player.scrolls.freezingRay = 5;
+                    evt.player.scrolls.heal = 5;
+                    evt.player.scrolls.lightning = 5;
+                    evt.player.scrolls.lifeSteal = 5;
+                }
+            });
         },
         parseArgs(args) {
             args.debug = !!args.debug;
+            args.gm = !!args.gm;
             args.actionInterval = parseInt(args.actionInterval, 10) | 0;
             args.beforeInit = isFunction(args.beforeInit);
             return args;

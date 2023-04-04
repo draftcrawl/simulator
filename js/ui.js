@@ -5,6 +5,7 @@ function browserUI(game) {
         logger(`Class: ${game.player.name}`);
         logger(`HP: ${game.player.hitPointsMax}`);
         logger(`Attack: 1d6+${game.player.damage.bonus}`);
+        game.args.gm && logger(`GM Enabled: Yes`);
     });
 
     game.ee.on('scene_start', (evt) => {
@@ -50,6 +51,14 @@ function browserUI(game) {
         logger(
             `${evt.target.name} stepped on a trap and took ${evt.amount} damage.`
         );
+    });
+
+    game.ee.on('damaged', (evt) => {
+        if ('alchemist:acid' !== evt.type) return;
+        logger(`${evt.source.name} spend a potion to throw acid at
+        ${evt.target.name} (HP: ${getHitPointsText(evt.target)}) and deals
+        ${evt.amount} damage.`);
+        logger(`${game.player.name} now has ${game.player.potions} potions.`);
     });
 
     game.ee.on('enemy_dies', (evt) => {
