@@ -5,20 +5,11 @@ function decidePlayerAction() {
     const max = player.hitPointsMax;
 
     if (
-        scene.type === 'event' &&
-        scene.findPotion &&
-        max - hp <= data.potion.heal
-    ) {
-        // if the player find a potion, check if they are low HP
-        return drinkPotion();
-        alert(1);
-    } else if (
         scene.type === 'combat' &&
         player.potions > 0 &&
         hp <= nextEnemiesDamage(scene.enemies)
     ) {
-        return drinkPotion();
-        alert(2);
+        drinkPotion();
     } else {
         // attack the enemies
         const targets = getTargets(scene.enemies, 1, 'attack');

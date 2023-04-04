@@ -8,7 +8,7 @@ function browserUI(game) {
     });
 
     game.ee.on('scene_start', (evt) => {
-        if (evt.type === 'boss') {
+        if (evt.type === 'combat' && evt.boss) {
             logger(`======= Final Scene (${evt.type}) =======`);
         } else {
             logger(
@@ -57,7 +57,10 @@ function browserUI(game) {
     });
 
     game.ee.on('find_item', (evt) => {
-        logger(`${game.player.name} find 1 ${evt.item}.`);
+        logger(
+            `${game.player.name} (${getHitPointsText(game.player)})
+            find 1 ${evt.item}.`
+        );
         if ('potion' === evt.item) {
             logger(
                 `${game.player.name} now has ${game.player.potions} potions.`
@@ -75,7 +78,8 @@ function browserUI(game) {
                 `${evt.target.name} (${getHitPointsText(oldHitPoints)})
                 drank a potion.`
             );
-            logger(`${evt.target.name} now has ${evt.target.potions} potions.`);
+            logger(`${evt.target.name} (${getHitPointsText(evt.target)})
+            now has ${evt.target.potions} potions.`);
         }
         logger(`${evt.target.name} restored ${evt.amount} HP.`);
     });
@@ -87,4 +91,8 @@ function logger(msg) {
     el.textContent = msg;
     loggerElement.appendChild(el);
     document.documentElement.scrollTop = 9999999;
+}
+
+function loggerReset() {
+    loggerElement.innerHTML = '';
 }

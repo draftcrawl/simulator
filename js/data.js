@@ -3,16 +3,38 @@ global.data = {};
 // CLASSES
 data.class = {};
 
+data.class.gameMaster = {
+    name: 'Game Master',
+    type: 'class',
+    id: 'gameMaster',
+    hitPoints: 100,
+    damage: {
+        bonus: 10,
+        fixed: false,
+    },
+    init() {
+        // learns 2 random spells on game init
+        game.ee.on('player_created', function (evt) {
+            evt.player.potions = 5;
+            evt.player.scrolls.fireball = 5;
+            evt.player.scrolls.freezingRay = 5;
+            evt.player.scrolls.heal = 5;
+            evt.player.scrolls.lightning = 5;
+            evt.player.scrolls.lifeSteal = 5;
+        });
+    },
+};
+
 data.class.swordman = {
     name: 'Swordman',
     type: 'class',
     id: 'swordman',
-    hitPoints: 60,
+    hitPoints: 25,
     damage: {
         bonus: 1,
         fixed: false,
     },
-    init(unit) {
+    init() {
         // takes -1 damage from creatures
         game.ee.on('damage', function (evt) {
             if (evt.type === 'attack' && evt.target.id === 'swordman') {
@@ -41,7 +63,7 @@ data.class.rogue = {
         bonus: 1,
         fixed: false,
     },
-    init(unit) {
+    init() {
         // deals double damage in peons and grunts
         game.ee.on('damage', function (evt) {
             if ('attack' !== evt.type) return;
@@ -61,7 +83,7 @@ data.class.hunter = {
         bonus: 1,
         fixed: false,
     },
-    init(unit) {
+    init() {
         // deals +4 damage on first attack in every combat
         game.ee.on('combat_start', function (evt) {
             game.player.flags.attacked = false;
@@ -96,14 +118,14 @@ data.class.wizard = {
         bonus: 0,
         fixed: false,
     },
-    init(unit) {
+    init() {
         // learns 2 random spells on game init
         game.ee.on('player_created', function (evt) {
             let count = 2;
-            const playerSpells = evt.player.spells;
+            const playerSpells = evt.player.spellsLearned;
             while (count-- > 0) {
                 const spell = getSpell();
-                playerSpells[spell.name] = (playerSpells[spell.name] || 0) + 1;
+                playerSpells[spell.id] = (playerSpells[spell.id] || 0) + 1;
                 debugLog('the Wizard player learned', spell.name, 'spell');
             }
         });
@@ -119,7 +141,7 @@ data.class.monk = {
         bonus: 1,
         fixed: false,
     },
-    init(unit) {
+    init() {
         // hit 2 creatures at once
         game.ee.on('get_number_of_targets', function (evt) {
             if ('attack' !== evt.type) return;
@@ -137,7 +159,7 @@ data.class.alchemist = {
         bonus: 1,
         fixed: false,
     },
-    init(unit) {
+    init() {
         // start the game with 1 potion
         game.ee.on('player_created', function (evt) {
             evt.player.potions += 1;
@@ -203,43 +225,62 @@ data.spell.fireball = {
     name: 'Fireball',
     type: 'spell',
     id: 'fireball',
-    cast(targets) {},
+    cast(caster, targets = null) {
+        const target = targets[0];
+        dealDamage(8, target, caster, 'spell:fireball');
+    },
 };
 
 data.spell.lightning = {
     name: 'Lightning',
     type: 'spell',
     id: 'lightning',
-    cast(targets) {},
+    cast(caster, targets = null) {
+        targets = targets.slice(0, 3);
+        for (const target of targets) {
+            dealDamage(4, target, caster, 'spell:lightning');
+        }
+    },
 };
 
 data.spell.freezingRay = {
     name: 'Freezing Ray',
     type: 'spell',
     id: 'freezingRay',
-    cast(targets) {},
+    cast(caster, targets = null) {
+        const target = targets[0];
+        const damage = roll() + 2;
+        dealDamage(damage, target, caster, 'spell:freezingRay');
+    },
 };
 
-data.spell.summonBeast = {
-    name: 'Summon Beast',
-    type: 'spell',
-    id: 'summonBeast',
-    cast(targets) {},
-};
+// data.spell.summonBeast = {
+//     name: 'Summon Beast',
+//     type: 'spell',
+//     id: 'summonBeast',
+//     cast(caster, targets = null) {},
+// };
 
 data.spell.heal = {
     name: 'Heal',
     type: 'spell',
     id: 'heal',
     heal: 10,
-    cast(targets) {},
+    cast(caster, targets = null) {
+        recoverHitPoints(caster, data.spell.heal.heal, 'spell:heal');
+    },
 };
 
 data.spell.lifeSteal = {
     name: 'Life Steal',
     type: 'spell',
     id: 'lifeSteal',
-    cast(targets) {},
+    heal: 5,
+    cast(caster, targets = null) {
+        const target = targets[0];
+        dealDamage(5, target, caster, 'spell:lifeSteal');
+        recoverHitPoints(caster, data.spell.lifeSteal.heal, 'spell:lifeSteal');
+    },
 };
 
 // POTION

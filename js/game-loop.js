@@ -15,6 +15,7 @@ function createGame(args) {
             this.sceneCount = 1;
 
             if (args.beforeInit) args.beforeInit(this);
+            this.globalEvents();
             this.ee.emit('game_init');
 
             this.run();
@@ -29,18 +30,27 @@ function createGame(args) {
                     number: this.sceneCount,
                 });
 
+                if (this.player.dead) break;
+
                 this.sceneCount++;
             }
 
             if (!this.player.dead) {
-                await createScene('boss', {
+                await createScene('combat', {
                     number: this.dungeonSize + 1,
+                    boss: true,
                 });
             }
 
             if (!this.player.dead) {
                 this.ee.emit('victory');
             }
+        },
+        globalEvents() {
+            this.ee.on('combat_start', () => {
+                // reset the spells cast
+                game.player.spellsCast = {};
+            });
         },
         parseArgs(args) {
             args.debug = !!args.debug;

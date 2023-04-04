@@ -32,7 +32,8 @@ function createUnitObject(data) {
 
 function createPlayer(id) {
     const obj = createUnitObject(getClass(id));
-    obj.spells = {};
+    obj.spellsLearned = {};
+    obj.spellsCast = {};
     obj.scrolls = {};
     obj.potions = 0;
     game.ee.emit('player_created', { player: obj });

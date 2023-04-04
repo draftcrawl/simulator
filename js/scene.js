@@ -4,11 +4,12 @@ async function createScene(type, args = {}) {
     game.ee.emit('scene_start', { type, ...args });
 
     if ('combat' === type) {
+        if (args.boss) {
+            return createBossFight();
+        }
         return createCombat();
     } else if ('event' === type) {
         return createEvent();
-    } else if ('boss' === type) {
-        return createBossFight();
     } else {
         throw new Error('Invalid scene type: ' + type);
     }
@@ -89,9 +90,15 @@ async function createBossFight() {
 }
 
 function findPotion() {
-    game.player.potions++;
+    const player = game.player;
+
+    player.potions++;
     game.ee.emit('find_item', { item: 'potion' });
-    game.scene.findPotion = true;
+    game.scene.foundPotion = true;
+
+    if (player.hitPointsMax - player.hitPoints >= data.item.potion.heal) {
+        return drinkPotion();
+    }
 }
 
 function findMagicScroll() {

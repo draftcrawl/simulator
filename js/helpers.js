@@ -3,7 +3,7 @@ function isFunction(func) {
 }
 
 function debugLog(...args) {
-    if (game.args.debug) console.log(...args);
+    if (global.game && game.args.debug) console.log(...args);
 }
 
 function dealDamage(amount, target, source = null, type = null) {
@@ -92,15 +92,6 @@ function getClass(id = 'random') {
     return obj;
 }
 
-function getSpell(id = 'random') {
-    const obj =
-        'random' === id
-            ? randomArrayItem(Object.values(data.spell))
-            : data.spell[id];
-    if (!obj) throw new Error(`Spell ${id} does not exist.`);
-    return obj;
-}
-
 async function wait(ms) {
     if (ms <= 0) return;
     return new Promise((resolve) => {
@@ -147,4 +138,22 @@ function checkGameOver() {
     if (game.player.dead) {
         game.ee.emit('game_over');
     }
+}
+
+function getSpell(id = 'random') {
+    const obj =
+        'random' === id
+            ? randomArrayItem(Object.values(data.spell))
+            : data.spell[id];
+    if (!obj) throw new Error(`Spell ${id} does not exist.`);
+    return obj;
+}
+
+// check if the player can cast a spell (learned or from scrolls)
+function hasSpell(id) {
+    const player = game.player;
+    if (player.spellsLearned[id] > 0) {
+        return (player.spellsCast[id] || 0) < (player.spellsLearned[id] || 0);
+    }
+    return (player.scrolls[id] || 0) > 0;
 }

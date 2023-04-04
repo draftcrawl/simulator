@@ -17,9 +17,14 @@ function drinkPotion() {
     recoverHitPoints(game.player, data.item.potion.heal, 'potion');
 }
 
-function castSpell(type) {}
-
-function readMagicScroll(type) {}
+// read a scroll first if possible
+// if not, cast the spell
+function castSpell(id) {
+    const spell = getSpell(id);
+    if (!hasSpell(id)) {
+        throw new Error('Not found spell or scroll of ' + spell.name);
+    }
+}
 
 function throwAcid(target) {
     // only alchemists
