@@ -3,14 +3,28 @@ function attack(source, target) {
     return dealDamage(amount, target, source, 'attack');
 }
 
-function getTargets(group, quantity = 1) {
+function getTargets(group, quantity = 1, type = null) {
     const alive = group.filter((obj) => !obj.dead);
     const ordered = alive.sort((a, b) => a.hitPoints - b.hitPoints);
-    return ordered.slice(0, quantity);
+    const eventData = { quantity, type };
+    game.ee.emit('get_number_of_targets', eventData);
+    return ordered.slice(0, eventData.quantity);
 }
 
-function drinkPotion() {}
+function drinkPotion() {
+    if (game.player.potions <= 0) return;
+    game.player.potions--;
+    recoverHitPoints(game.player, data.item.potion.heal, 'potion');
+}
 
-function castSpell() {}
+function castSpell(type) {}
 
-function readMagicScroll() {}
+function readMagicScroll(type) {}
+
+function throwAcid(target) {
+    // only alchemists
+    if ('alchemist' !== game.player.id) return;
+    const damage = roll() + 10;
+    player.potions--;
+    return dealDamage(damage, target, game.player, 'alchemist_acid');
+}

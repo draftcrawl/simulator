@@ -25,6 +25,14 @@ const createNanoEvents = () => ({
     },
 });
 
+function arrayClone(array) {
+    const result = [];
+    for (const item of array) {
+        result.push(item);
+    }
+    return array;
+}
+
 // based on https://stackoverflow.com/a/4460624
 function deepClone(item) {
     if (!item) {

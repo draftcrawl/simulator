@@ -7,7 +7,7 @@ async function gameLoop() {
     createGame({
         playerClass: urlParams.get('class') || undefined,
         debug: urlParams.get('debug'),
-        actionInterval: 250,
+        actionInterval: urlParams.get('i') || 1000,
         beforeInit: browserUI,
     });
 }

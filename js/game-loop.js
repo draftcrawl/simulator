@@ -4,6 +4,7 @@ function createGame(args) {
         dungeonSize: null,
         player: null,
         ee: null, // ee = event emitter
+        scene: null,
         init() {
             global.game = this;
             args = this.args = this.parseArgs(args);
@@ -22,16 +23,23 @@ function createGame(args) {
             this.ee.emit('run_start');
 
             while (this.sceneCount <= this.dungeonSize) {
+                game.scene = {};
+
                 await createScene(null, {
                     number: this.sceneCount,
                 });
 
-                if (this.player.dead) {
-                    this.ee.emit('game_over');
-                    break;
-                }
-
                 this.sceneCount++;
+            }
+
+            if (!this.player.dead) {
+                await createScene('boss', {
+                    number: this.dungeonSize + 1,
+                });
+            }
+
+            if (!this.player.dead) {
+                this.ee.emit('victory');
             }
         },
         parseArgs(args) {

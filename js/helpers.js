@@ -37,42 +37,6 @@ function randomArrayItem(array) {
     return array[index];
 }
 
-function createUnitObject(data) {
-    debugLog('creating', data.id);
-    const values = deepClone(data);
-    const obj = {
-        ...values,
-        hitPointsMax: values.hitPoints,
-
-        // use the .flags to store status and temporary informations
-        flags: {},
-
-        // check if a unit are alive or dead
-        get dead() {
-            return this.hitPoints <= 0;
-        },
-
-        // attack another unit
-        attack(target) {
-            return attack(this, target);
-        },
-    };
-    if (data.init) data.init(obj);
-    return obj;
-}
-
-function createPlayer(id) {
-    const obj = createUnitObject(getClass(id));
-    obj.spells = {};
-    obj.scrolls = {};
-    obj.potions = 0;
-    return obj;
-}
-
-function createCreature(id) {
-    return createUnitObject(getCreature(id));
-}
-
 function createCreatureGroup(index = -1) {
     const groupList = [
         ['peon'],
@@ -87,18 +51,24 @@ function createCreatureGroup(index = -1) {
     for (const id of selected) {
         group.push(createCreature(id));
     }
-    return group;
+    return renamePeons(group);
 }
 
 function getCreatureGroupName(group) {
+    if (group.length === 1) {
+        return group[0].name;
+    }
+
     const counter = {};
     const names = [];
     for (const creature of group) {
-        counter[creature.name] = (counter[creature.name] || 0) + 1;
+        const name = creature.name.includes('Peon') ? 'Peon' : creature.name;
+        counter[name] = (counter[name] || 0) + 1;
     }
-    for (const name in counter) {
+    for (let name in counter) {
+        name = name.includes('Peon') ? 'Peon' : name;
         const number = counter[name];
-        const s = number > 1 && 'Peon' === name ? 's' : '';
+        const s = number > 1 ? 's' : '';
         names.push(`${number} ${name + s}`);
     }
     return names.join(' and ');
@@ -140,9 +110,41 @@ async function wait(ms) {
 
 function getSceneType(type = null) {
     const types = ['combat', 'event'];
-    return types.includes(type) ? type : randomArrayItem(types);
+    return 'boss' === type || types.includes(type)
+        ? type
+        : randomArrayItem(types);
 }
 
 function getHitPointsText(unit) {
     return `${Math.max(unit.hitPoints, 0)}/${unit.hitPointsMax}`;
+}
+
+function renamePeons(group) {
+    if (1 === group.length) return group;
+
+    let i = 1;
+    for (const unit of group) {
+        if ('peon' === unit.id) {
+            unit.name += `[${i++}]`;
+        }
+    }
+
+    return group;
+}
+
+function recoverHitPoints(target, amount, type = null) {
+    const old = target.hitPoints;
+    target.hitPoints = Math.min(target.hitPoints + amount, target.hitPointsMax);
+    game.ee.emit('recover_hit_points', {
+        target,
+        amount: target.hitPoints - old,
+        absoluteAmount: amount,
+        type,
+    });
+}
+
+function checkGameOver() {
+    if (game.player.dead) {
+        game.ee.emit('game_over');
+    }
 }
