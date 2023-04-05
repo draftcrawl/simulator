@@ -1,5 +1,5 @@
 function decideAllyAction(unit) {
-    return attackEnemies(unit, 'ally');
+    return attackEnemies(unit, unit.id);
 }
 
 function decidePlayerAction() {
@@ -77,6 +77,7 @@ function decidePlayerAction() {
     if (
         'wizard' !== player.id &&
         !facingEnemy('grunt') &&
+        facingEnemy('peon') &&
         countEnemies('peon') <= 2
     ) {
         return attackEnemies();
@@ -106,16 +107,6 @@ function decidePlayerAction() {
     return attackEnemies();
 }
 
-function hasBeast() {
-    const allies = game.scene.allies || [];
-    for (const unit of allies) {
-        if (unit.id === 'spiritualBeast' && !unit.dead) {
-            return true;
-        }
-    }
-    return false;
-}
-
 function decideEnemyAction(enemy) {
     const allies = game.scene.allies;
     const targets = getTargets(allies, 1, 'enemy:attack');
@@ -132,6 +123,16 @@ function attackEnemies(source = null, type = 'player') {
     for (const target of targets) {
         source.attack(target, attackDamage);
     }
+}
+
+function hasBeast() {
+    const allies = game.scene.allies || [];
+    for (const unit of allies) {
+        if (unit.id === 'spiritualBeast' && !unit.dead) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function facingEnemy(...ids) {

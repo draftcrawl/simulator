@@ -74,6 +74,11 @@ async function createBossBattle() {
 
         decidePlayerAction();
 
+        for (const unit of game.scene.allies) {
+            if (unit.dead || 'class' === unit.type) continue;
+            decideAllyAction(unit);
+        }
+
         if (!boss.dead) {
             decideEnemyAction(boss);
         }
