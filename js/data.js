@@ -81,7 +81,7 @@ data.class.hunter = {
         bonus: 1,
         fixed: false,
     },
-    firstAttackBonus: 6,
+    firstAttackBonus: 5,
     init() {
         // deals more damage on first attack in every combat
         game.ee.on('damage', function (evt) {
@@ -191,7 +191,7 @@ data.creature.grunt = {
         bonus: 3,
         fixed: true,
     },
-    hitPoints: 10,
+    hitPoints: 11,
 };
 
 data.creature.brute = {
@@ -323,6 +323,7 @@ data.summoning.spiritualBeast = {
 
 // POTION
 data.potion = {
+    name: 'Potion',
     recover: 15,
 };
 
