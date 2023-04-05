@@ -187,4 +187,5 @@ function displayActionButtons(
     }
 
     loggerActions.style.display = 'block';
+    document.documentElement.scrollTop = 9999999;
 }
