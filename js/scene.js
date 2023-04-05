@@ -39,8 +39,9 @@ async function createCombat() {
             if (player.dead) break;
         }
 
-        if (player.dead || allEnemiesDie) break;
+        game.ee.emit('combat_round_end', { number: round });
 
+        if (player.dead || allEnemiesDie) break;
         round++;
     }
 
@@ -96,7 +97,7 @@ function findPotion() {
     game.ee.emit('find_item', { item: 'potion' });
     game.scene.foundPotion = true;
 
-    if (player.hitPointsMax - player.hitPoints >= data.item.potion.heal) {
+    if (player.hitPointsMax - player.hitPoints >= data.item.potion.recover) {
         return drinkPotion();
     }
 }

@@ -15,8 +15,11 @@ function createUnitObject(data) {
         },
 
         // attack another unit
-        attack(target) {
-            return attack(this, target);
+        attack(target, damage = null) {
+            if (this.flags.stunned) {
+                return game.ee.emit('unit_cant_attack', { unit: this });
+            }
+            return attack(this, target, damage);
         },
     };
 

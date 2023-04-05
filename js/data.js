@@ -215,9 +215,10 @@ data.spell.fireball = {
     name: 'Fireball',
     type: 'spell',
     id: 'fireball',
-    cast(caster, targets = null) {
-        const target = targets[0];
-        dealDamage(8, target, caster, 'spell:fireball');
+    cast(caster) {
+        const enemies = game.scene.enemies;
+        const target = getTargets(enemies, 1, 'spell:fireball')[0];
+        if (target) dealDamage(8, target, caster, 'spell:fireball');
     },
 };
 
@@ -225,8 +226,9 @@ data.spell.lightning = {
     name: 'Lightning',
     type: 'spell',
     id: 'lightning',
-    cast(caster, targets = null) {
-        targets = targets.slice(0, 3);
+    cast(caster) {
+        const enemies = game.scene.enemies;
+        const targets = getTargets(enemies, 3, 'spell:lightning');
         for (const target of targets) {
             dealDamage(4, target, caster, 'spell:lightning');
         }
@@ -237,10 +239,14 @@ data.spell.freezingRay = {
     name: 'Freezing Ray',
     type: 'spell',
     id: 'freezingRay',
-    cast(caster, targets = null) {
-        const target = targets[0];
-        const damage = roll() + 2;
-        dealDamage(damage, target, caster, 'spell:freezingRay');
+    cast(caster) {
+        const enemies = game.scene.enemies;
+        const target = getTargets(enemies, 1, 'spell:freezingRay')[0];
+        if (target) {
+            const damage = roll() + 2;
+            dealDamage(damage, target, caster, 'spell:freezingRay');
+            stunUnit(target);
+        }
     },
 };
 
@@ -248,16 +254,16 @@ data.spell.freezingRay = {
 //     name: 'Summon Beast',
 //     type: 'spell',
 //     id: 'summonBeast',
-//     cast(caster, targets = null) {},
+//     cast(caster) {},
 // };
 
 data.spell.heal = {
     name: 'Heal',
     type: 'spell',
     id: 'heal',
-    heal: 10,
-    cast(caster, targets = null) {
-        recoverHitPoints(caster, data.spell.heal.heal, 'spell:heal');
+    recover: 10,
+    cast(caster) {
+        recoverHitPoints(caster, data.spell.heal.recover, 'spell:heal');
     },
 };
 
@@ -265,11 +271,18 @@ data.spell.lifeSteal = {
     name: 'Life Steal',
     type: 'spell',
     id: 'lifeSteal',
-    heal: 5,
-    cast(caster, targets = null) {
-        const target = targets[0];
-        dealDamage(5, target, caster, 'spell:lifeSteal');
-        recoverHitPoints(caster, data.spell.lifeSteal.heal, 'spell:lifeSteal');
+    recover: 5,
+    cast(caster) {
+        const enemies = game.scene.enemies;
+        const target = getTargets(enemies, 1, 'spell:lifeSteal')[0];
+        if (target) {
+            dealDamage(5, target, caster, 'spell:lifeSteal');
+            recoverHitPoints(
+                caster,
+                data.spell.lifeSteal.recover,
+                'spell:lifeSteal'
+            );
+        }
     },
 };
 
@@ -277,5 +290,5 @@ data.spell.lifeSteal = {
 data.item = {};
 
 data.item.potion = {
-    heal: 15,
+    recover: 15,
 };

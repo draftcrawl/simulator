@@ -1,5 +1,5 @@
-function attack(source, target) {
-    const amount = source.damage.bonus + (source.damage.fixed ? 0 : roll());
+function attack(source, target, damage = null) {
+    const amount = damage ? damage : getAttackDamage(source);
     return dealDamage(amount, target, source, 'attack');
 }
 
@@ -30,25 +30,43 @@ function getEnemy(id) {
 }
 
 function drinkPotion() {
-    if (game.player.potions <= 0) return;
+    if (game.player.potions <= 0)
+        throw new Error('Player does not have potions');
     game.player.potions--;
-    recoverHitPoints(game.player, data.item.potion.heal, 'potion');
+    recoverHitPoints(game.player, data.item.potion.recover, 'potion');
 }
 
 // read a scroll first if possible
 // if not, cast the spell
-function castSpell(id) {
+function castSpell(id, onlyLearned = false) {
     const spell = getSpell(id);
-    if (!hasSpell(id)) {
-        throw new Error(
-            'Player does not have spell or scroll of ' + spell.name
-        );
+    const player = game.player;
+    let from = 'spells';
+
+    if (hasSpell(id, true)) {
+        // cast learned spell
+        player.spellsCast[id] = (player.spellsCast[id] || 0) + 1;
+        game.ee.emit('spell_cast', { spell, caster: player, from });
+        return spell.cast(player);
     }
+
+    if (!onlyLearned && hasSpell(id)) {
+        // cast magic scroll
+        player.scrolls[id] = Math.max(--player.scrolls[id], 0);
+        from = 'scrolls';
+        game.ee.emit('spell_cast', { spell, caster: player, from });
+        return spell.cast(player);
+    }
+
+    throw new Error('Player does not have spell or scroll of ' + spell.name);
 }
 
 function throwAcid(target) {
     // only alchemists
     if ('alchemist' !== game.player.id) return;
+
+    if (game.player.potions <= 0)
+        throw new Error('Player does not have potions');
 
     game.player.potions--;
     const damage = roll() + data.class.alchemist.damageAcid;

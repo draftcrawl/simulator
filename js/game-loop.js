@@ -8,6 +8,8 @@ function createGame(args) {
         init() {
             global.game = this;
             args = this.args = this.parseArgs(args);
+            console.log('seed: ' + args.seed);
+            this.rng = new RNG().setSeed(checkSeed(args.seed));
 
             this.ee = createNanoEvents();
             this.globalEvents();
@@ -53,20 +55,29 @@ function createGame(args) {
                 // reset the spells cast
                 game.player.spellsCast = {};
             });
+            this.ee.on('combat_round_end', () => {
+                const enemies = game.scene.enemies || [];
+                for (const enemy of enemies) {
+                    delete enemy.flags.stunned;
+                }
+            });
             this.ee.on('player_created', (evt) => {
                 if (game.args.gm) {
                     evt.player.hitPoints = evt.player.hitPoints * 3;
+                    evt.player.damage.bonus = evt.player.damage.bonus * 3;
                     evt.player.hitPointsMax = evt.player.hitPoints;
-                    evt.player.potions = 5;
-                    evt.player.scrolls.fireball = 5;
-                    evt.player.scrolls.freezingRay = 5;
-                    evt.player.scrolls.heal = 5;
-                    evt.player.scrolls.lightning = 5;
-                    evt.player.scrolls.lifeSteal = 5;
+                    //evt.player.potions = 5;
+                    //evt.player.scrolls.fireball = 5;
+                    evt.player.scrolls.freezingRay = 500;
+                    //evt.player.scrolls.heal = 5;
+                    //evt.player.scrolls.lightning = 5;
+                    //evt.player.scrolls.lifeSteal = 5;
+                    //evt.player.scrolls.summonBeast = 5;
                 }
             });
         },
         parseArgs(args) {
+            args.seed = args.seed ? parseInt(args.seed, 10) : Date.now();
             args.debug = !!args.debug;
             args.gm = !!args.gm;
             args.actionInterval = parseInt(args.actionInterval, 10) | 0;

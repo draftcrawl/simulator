@@ -1,8 +1,12 @@
 function browserUI(game) {
     game.ee.on('run_start', () => {
         logger('=== Game Started ===');
+        logger(`Seed: ${game.args.seed}`);
         logger(`Dungeon Size: ${game.dungeonSize}`);
         logger(`Class: ${game.player.name}`);
+        if (Object.keys(game.player.spellsLearned)) {
+            logger(`Spells: ${getPlayerSpellsName()}`);
+        }
         logger(`HP: ${game.player.hitPointsMax}`);
         logger(`Attack: 1d6+${game.player.damage.bonus}`);
         game.args.gm && logger(`GM Enabled: Yes`);
@@ -36,6 +40,16 @@ function browserUI(game) {
         logger(`> Round ${evt.number}`);
     });
 
+    game.ee.on('unit_cant_attack', ({ unit }) => {
+        if (unit.flags.stunned) {
+            logger(
+                `${unit.name} (HP: ${getHitPointsText(unit)})
+                is stunned and cannot attack this round.`
+            );
+            return;
+        }
+    });
+
     game.ee.on('damaged', (evt) => {
         if ('attack' !== evt.type) return;
         logger(
@@ -61,8 +75,28 @@ function browserUI(game) {
         logger(`${game.player.name} now has ${game.player.potions} potions.`);
     });
 
-    game.ee.on('enemy_dies', (evt) => {
-        logger(`The ${evt.enemy.name} dies.`);
+    game.ee.on('unit_dies', ({ unit }) => {
+        logger(`The ${unit.name} dies.`);
+    });
+
+    game.ee.on('spell_cast', ({ spell, caster, from }) => {
+        if ('spells' === from) {
+            logger(
+                `${caster.name} (HP: ${getHitPointsText(caster)})
+                is casting ${spell.name}...`
+            );
+        } else {
+            logger(
+                `${caster.name} (HP: ${getHitPointsText(caster)})
+                is reading a scroll of ${spell.name}...`
+            );
+        }
+    });
+
+    game.ee.on('damaged', (evt) => {
+        if (!evt.type.includes('spell:')) return;
+        logger(`The spell deals ${evt.amount} damage to
+        ${evt.target.name} (HP: ${getHitPointsText(evt.target)}) .`);
     });
 
     game.ee.on('find_item', (evt) => {

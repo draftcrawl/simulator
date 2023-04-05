@@ -1,34 +1,77 @@
 function decidePlayerAction() {
     const scene = game.scene;
     const player = game.player;
-    const hp = player.hitPoints;
+    const currentHP = player.hitPoints;
+    const missingHP = player.hitPointsMax - currentHP;
     const enemies = scene.enemies;
 
-    if (player.potions > 0 && hp <= nextEnemiesDamage(enemies)) {
-        drinkPotion();
+    // Healing behaviors
+    if (player.potions > 0 && currentHP <= nextEnemiesDamage(enemies)) {
+        // Drink potion to not die
+        return drinkPotion();
+    }
+    if (hasSpell('heal') && currentHP <= nextEnemiesDamage(enemies)) {
+        // Drink potion to not die
+        return castSpell('heal');
     } else if (
+        player.potions > 0 &&
+        1 === countEnemies('peon') &&
+        missingHP >= data.item.potion.recover
+    ) {
+        // Drink potion when facing only one peon
+        return drinkPotion();
+    } else if (
+        hasSpell('heal') &&
+        1 === countEnemies('peon') &&
+        missingHP >= data.spell.heal.recover
+    ) {
+        return castSpell('heal');
+    }
+
+    // Alchemist acid againts brutes or boss
+    if (
         player.id === 'alchemist' &&
         player.potions > 1 &&
         facingEnemy('brute') &&
-        getEnemy('brute').hitPoints >= 9
+        getEnemy('brute').hitPoints >= 3
     ) {
+        // throw acid in Brutes
         const target = getEnemy('brute');
-        throwAcid(target);
+        return throwAcid(target);
     } else if (
         player.id === 'alchemist' &&
         player.potions > 1 &&
         facingEnemy('boss') &&
-        getEnemy('boss').hitPoints >= 2
+        getEnemy('boss').hitPoints >= 3
     ) {
+        // throw acid in Boss
         const target = getEnemy('boss');
-        throwAcid(target);
-    } else {
-        // attack the enemies
-        const targets = getTargets(enemies, 1, 'attack');
-        for (const target of targets) {
-            attackEnemy(target);
-        }
+        return throwAcid(target);
     }
+
+    // Offensive behaviors
+    if (hasSpell('lightning') && countEnemies('peon') >= 1) {
+        return castSpell('lightning');
+    } else if (
+        hasSpell('lifeSteal') &&
+        missingHP >= data.spell.lifeSteal.recover
+    ) {
+        return castSpell('lifeSteal');
+    } else if (hasSpell('freezingRay')) {
+        return castSpell('freezingRay');
+    } else if (hasSpell('fireball')) {
+        return castSpell('fireball');
+    } else if (hasSpell('lightning', true)) {
+        return castSpell('lightning');
+    }
+
+    // attack the enemies
+    const targets = getTargets(enemies, 1, 'attack');
+    const attackDamage = getAttackDamage(player);
+    for (const target of targets) {
+        player.attack(target, attackDamage);
+    }
+    return;
 }
 
 function facingEnemy(...ids) {
@@ -43,19 +86,23 @@ function facingEnemy(...ids) {
     return false;
 }
 
-function attackEnemy(target) {
-    game.player.attack(target);
-    if (target.dead) {
-        game.ee.emit('enemy_dies', { enemy: target });
+function countEnemies(id = 'all') {
+    const enemies = game.scene.enemies;
+    if (!enemies) return 0;
+    let total = 0;
+    for (const enemy of enemies) {
+        if (enemy.dead) continue;
+        if (enemy.id === id || 'all' === id) total++;
     }
+    return total;
 }
 
 function nextEnemiesDamage(enemies) {
     const playerMinDamage = MinAttackDamage(game.player);
     const nextPlayerTargets = getTargets(enemies, 1, 'attack');
-    const eligibleEnemies = arrayClone(enemies);
+    const eligibleEnemies = unitGroupAlive(arrayClone(enemies));
 
-    eligibleEnemies.filter((e) => !nextPlayerTargets.includes(e) && !e.dead);
+    eligibleEnemies.filter((e) => !nextPlayerTargets.includes(e));
     nextPlayerTargets.filter((e) => e.hitPoints > playerMinDamage);
     eligibleEnemies.concat(nextPlayerTargets);
 

@@ -23,18 +23,21 @@ function dealDamage(amount, target, source = null, type = null) {
 
     game.ee.emit('damaged', deepClone(eventData));
 
+    if (target.dead) {
+        game.ee.emit('unit_dies', { unit: deepClone(target) });
+    }
+
     return eventData.amount;
 }
 
 function roll(max = 6, min = 1) {
-    const result = Math.floor(Math.random() * (max - min + 1) + min);
+    const result = game.rng.getUniformInt(min, max);
     debugLog(`roll [ ${min} ~ ${max} ] = ${result}`);
     return result;
 }
 
 function randomArrayItem(array) {
-    const index = Math.floor(roll(array.length) - 1);
-    return array[index];
+    return game.rng.getItem(array);
 }
 
 function unitGroupAlive(group) {
@@ -153,11 +156,46 @@ function getSpell(id = 'random') {
     return obj;
 }
 
-// check if the player can cast a spell (learned or from scrolls)
-function hasSpell(id) {
-    const player = game.player;
-    if (player.spellsLearned[id] > 0) {
-        return (player.spellsCast[id] || 0) < (player.spellsLearned[id] || 0);
+function getPlayerSpellsName() {
+    const names = [];
+    const spellsLearned = game.player.spellsLearned;
+    for (const key in spellsLearned) {
+        if (Object.hasOwnProperty.call(spellsLearned, key)) {
+            const spell = getSpell(key);
+            names.push(spell.name);
+        }
     }
-    return (player.scrolls[id] || 0) > 0;
+    return names.join(', ');
+}
+
+// check if the player can cast a spell (learned or from scrolls)
+function hasSpell(id, onlyLearned = false) {
+    const player = game.player;
+
+    const hasSpell =
+        (player.spellsCast[id] || 0) < (player.spellsLearned[id] || 0);
+    if (onlyLearned) return hasSpell;
+
+    const hasScroll = (player.scrolls[id] || 0) > 0;
+    return hasScroll || hasSpell;
+}
+
+function getAttackDamage(unit) {
+    return unit.damage.bonus + (unit.damage.fixed ? 0 : roll());
+}
+
+function stunUnit(unit) {
+    const enemies = game.scene.enemies || [];
+    for (const enemy of enemies) {
+        if (unit.uid !== enemy.uid) continue;
+        enemy.flags.stunned = true;
+        break;
+    }
+}
+
+function checkSeed(seed) {
+    if ('number' !== typeof seed || Number.isNaN(seed)) {
+        throw new Error('Seed must be a integer decimal');
+    }
+    return seed;
 }

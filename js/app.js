@@ -3,6 +3,7 @@ const mult = urlParams.get('mult') | 0;
 
 if (!mult) {
     createGame({
+        seed: urlParams.get('seed'),
         gm: urlParams.get('gm'),
         playerClass: urlParams.get('class') || undefined,
         debug: urlParams.get('debug'),
@@ -28,6 +29,7 @@ if (!mult) {
             return displayResults();
         }
         createGame({
+            seed: urlParams.get('seed'),
             gm: urlParams.get('gm'),
             playerClass: urlParams.get('class') || undefined,
             debug: urlParams.get('debug'),
