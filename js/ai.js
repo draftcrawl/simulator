@@ -52,6 +52,8 @@ function decidePlayerAction() {
     // Offensive behaviors
     if (hasSpell('lightning') && countEnemies('peon') >= 1) {
         return castSpell('lightning');
+    } else if (player.id === 'hunter' && !player.flags.attacked) {
+        return attackEnemies();
     } else if (
         hasSpell('lifeSteal') &&
         missingHP >= data.spell.lifeSteal.recover
@@ -66,12 +68,17 @@ function decidePlayerAction() {
     }
 
     // attack the enemies
+    return attackEnemies();
+}
+
+function attackEnemies() {
+    const player = game.player;
+    const enemies = game.scene.enemies;
     const targets = getTargets(enemies, 1, 'attack');
     const attackDamage = getAttackDamage(player);
     for (const target of targets) {
         player.attack(target, attackDamage);
     }
-    return;
 }
 
 function facingEnemy(...ids) {
