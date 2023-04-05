@@ -5,14 +5,17 @@ async function createScene(type, args = {}) {
 
     if ('combat' === type) {
         if (args.boss) {
-            return createBossFight();
+            await createBossFight();
+        } else {
+            await createCombat();
         }
-        return createCombat();
     } else if ('event' === type) {
-        return createEvent();
+        await createEvent();
     } else {
         throw new Error('Invalid scene type: ' + type);
     }
+
+    game.ee.emit('scene_end', { type, ...args });
 }
 
 async function createCombat() {
@@ -21,6 +24,7 @@ async function createCombat() {
     let round = 1;
 
     game.scene.enemies = enemies;
+    game.scene.allies = [player];
     game.ee.emit('combat_start', { enemies });
 
     while (true) {
@@ -30,12 +34,17 @@ async function createCombat() {
 
         decidePlayerAction();
 
+        for (const unit of game.scene.allies) {
+            if (unit.dead || 'class' === unit.type) continue;
+            decideAllyAction(unit);
+        }
+
         let allEnemiesDie = true;
         for (const enemy of enemies) {
             if (enemy.dead) continue;
             allEnemiesDie = false;
             await wait(game.args.actionInterval);
-            enemy.attack(player);
+            decideEnemyAction(enemy);
             if (player.dead) break;
         }
 
@@ -97,7 +106,7 @@ function findPotion() {
     game.ee.emit('find_item', { item: 'potion' });
     game.scene.foundPotion = true;
 
-    if (player.hitPointsMax - player.hitPoints >= data.item.potion.recover) {
+    if (player.hitPointsMax - player.hitPoints >= data.potion.recover) {
         return drinkPotion();
     }
 }
@@ -109,7 +118,7 @@ function findMagicScroll() {
 }
 
 function dealTrapDamage() {
-    const damage = roll() + 4;
+    const damage = getAttackDamage(data.trap);
     dealDamage(damage, game.player, null, 'trap');
     checkGameOver();
 }

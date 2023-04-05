@@ -33,7 +33,7 @@ function drinkPotion() {
     if (game.player.potions <= 0)
         throw new Error('Player does not have potions');
     game.player.potions--;
-    recoverHitPoints(game.player, data.item.potion.recover, 'potion');
+    recoverHitPoints(game.player, data.potion.recover, 'potion');
 }
 
 // read a scroll first if possible

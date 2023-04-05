@@ -8,7 +8,6 @@ function createGame(args) {
         init() {
             global.game = this;
             args = this.args = this.parseArgs(args);
-            console.log('seed: ' + args.seed);
             this.rng = new RNG().setSeed(checkSeed(args.seed));
 
             this.ee = createNanoEvents();
@@ -61,18 +60,26 @@ function createGame(args) {
                     delete enemy.flags.stunned;
                 }
             });
+            this.ee.on('scene_end', () => {
+                const allies = game.scene.allies || [];
+                for (const unit of allies) {
+                    if ('summoning' === unit.type) {
+                        expireSummoning(unit);
+                    }
+                }
+            });
             this.ee.on('player_created', (evt) => {
                 if (game.args.gm) {
                     evt.player.hitPoints = evt.player.hitPoints * 3;
                     evt.player.damage.bonus = evt.player.damage.bonus * 3;
                     evt.player.hitPointsMax = evt.player.hitPoints;
-                    //evt.player.potions = 5;
-                    //evt.player.scrolls.fireball = 5;
-                    evt.player.scrolls.freezingRay = 500;
-                    //evt.player.scrolls.heal = 5;
-                    //evt.player.scrolls.lightning = 5;
-                    //evt.player.scrolls.lifeSteal = 5;
-                    //evt.player.scrolls.summonBeast = 5;
+                    evt.player.potions = 5;
+                    evt.player.scrolls.fireball = 5;
+                    evt.player.scrolls.freezingRay = 5;
+                    evt.player.scrolls.heal = 5;
+                    evt.player.scrolls.lightning = 5;
+                    evt.player.scrolls.lifeSteal = 5;
+                    evt.player.scrolls.summonBeast = 5;
                 }
             });
         },

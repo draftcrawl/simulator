@@ -29,13 +29,11 @@ if (!mult) {
             return displayResults();
         }
         createGame({
-            seed: urlParams.get('seed'),
             gm: urlParams.get('gm'),
             playerClass: urlParams.get('class') || undefined,
             debug: urlParams.get('debug'),
             actionInterval: 0,
             beforeInit: (game) => {
-                // loggerReset();
                 // browserUI(game);
                 game.ee.on('game_over', () => {
                     state.lose++;

@@ -162,7 +162,9 @@ function getPlayerSpellsName() {
     for (const key in spellsLearned) {
         if (Object.hasOwnProperty.call(spellsLearned, key)) {
             const spell = getSpell(key);
-            names.push(spell.name);
+            const count = spellsLearned[key];
+            const name = spell.name + (count > 1 ? ` x${count}` : '');
+            names.push(name);
         }
     }
     return names.join(', ');
@@ -198,4 +200,10 @@ function checkSeed(seed) {
         throw new Error('Seed must be a positive integer decimal');
     }
     return seed;
+}
+
+function expireSummoning(unit) {
+    if ('summoning' !== unit.type || unit.dead) return;
+    unit.hitPoints = 0;
+    game.ee.emit('summoning_expired', { unit: deepClone(unit) });
 }

@@ -43,9 +43,18 @@ function createPlayer(id) {
 }
 
 function createCreature(id) {
-    return createUnitObject(getCreature(id));
+    const obj = createUnitObject(getCreature(id));
+    game.ee.emit('unit_created', { unit: obj });
+    return obj;
 }
 
 function createBoss() {
     return createUnitObject(data.boss);
+}
+
+function createSummoning(data) {
+    const obj = createUnitObject(data);
+    obj.type = 'summoning';
+    game.ee.emit('unit_summoned', { unit: obj });
+    return obj;
 }

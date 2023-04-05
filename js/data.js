@@ -3,22 +3,11 @@ global.data = {};
 // CLASSES
 data.class = {};
 
-// data.class.gameMaster = {
-//     name: 'Game Master',
-//     type: 'class',
-//     id: 'gameMaster',
-//     hitPoints: 100,
-//     damage: {
-//         bonus: 10,
-//         fixed: false,
-//     },
-// };
-
 data.class.swordman = {
     name: 'Swordman',
     type: 'class',
     id: 'swordman',
-    hitPoints: 25,
+    hitPoints: 30,
     damage: {
         bonus: 1,
         fixed: false,
@@ -133,7 +122,7 @@ data.class.monk = {
     init() {
         // hit 2 creatures at once
         game.ee.on('get_number_of_targets', function (evt) {
-            if ('attack' !== evt.type) return;
+            if ('player:attack' !== evt.type) return;
             evt.quantity = 2;
         });
     },
@@ -250,12 +239,22 @@ data.spell.freezingRay = {
     },
 };
 
-// data.spell.summonBeast = {
-//     name: 'Summon Beast',
-//     type: 'spell',
-//     id: 'summonBeast',
-//     cast(caster) {},
-// };
+data.spell.summonBeast = {
+    name: 'Summon Beast',
+    type: 'spell',
+    id: 'summonBeast',
+    cast(caster) {
+        // maybe destroy current summoned beast
+        const allies = game.scene.allies || [];
+        for (const unit of allies) {
+            if ('spiritualBeast' === unit.id) {
+                expireSummoning(unit);
+            }
+        }
+        const unit = createSummoning(data.summoning.spiritualBeast);
+        allies.push(unit);
+    },
+};
 
 data.spell.heal = {
     name: 'Heal',
@@ -286,9 +285,28 @@ data.spell.lifeSteal = {
     },
 };
 
-// POTION
-data.item = {};
+//SUMMONINGS
+data.summoning = {};
+data.summoning.spiritualBeast = {
+    name: 'Spiritual Beast',
+    type: 'summoning',
+    id: 'spiritualBeast',
+    damage: {
+        bonus: 0,
+        fixed: false,
+    },
+    hitPoints: 5,
+};
 
-data.item.potion = {
+// POTION
+data.potion = {
     recover: 15,
+};
+
+// TRAP
+data.trap = {
+    damage: {
+        bonus: 4,
+        fixed: false,
+    },
 };

@@ -1,3 +1,7 @@
+function decideAllyAction(unit) {
+    return attackEnemies(unit, 'ally');
+}
+
 function decidePlayerAction() {
     const scene = game.scene;
     const player = game.player;
@@ -16,7 +20,7 @@ function decidePlayerAction() {
     } else if (
         player.potions > 0 &&
         1 === countEnemies('peon') &&
-        missingHP >= data.item.potion.recover
+        missingHP >= data.potion.recover
     ) {
         // Drink potion when facing only one peon
         return drinkPotion();
@@ -50,8 +54,18 @@ function decidePlayerAction() {
     }
 
     // Offensive behaviors
-    if (hasSpell('lightning') && countEnemies('peon') >= 1) {
+    if (hasSpell('lightning') && countEnemies('peon') >= 2) {
         return castSpell('lightning');
+    } else if (
+        hasSpell('summonBeast') &&
+        !hasBeast() &&
+        (facingEnemy('boss') || countEnemies() > 2)
+    ) {
+        // summon a beast
+        return castSpell('summonBeast');
+    } else if (hasSpell('summonBeast', true)) {
+        // summon a beast
+        return castSpell('summonBeast');
     } else if (player.id === 'hunter' && !player.flags.attacked) {
         return attackEnemies();
     } else if (
@@ -71,13 +85,31 @@ function decidePlayerAction() {
     return attackEnemies();
 }
 
-function attackEnemies() {
-    const player = game.player;
-    const enemies = game.scene.enemies;
-    const targets = getTargets(enemies, 1, 'attack');
-    const attackDamage = getAttackDamage(player);
+function hasBeast() {
+    const allies = game.scene.allies || [];
+    for (const unit of allies) {
+        if (unit.id === 'spiritualBeast' && !unit.dead) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function decideEnemyAction(enemy) {
+    const allies = game.scene.allies;
+    const targets = getTargets(allies, 1, 'enemy:attack');
     for (const target of targets) {
-        player.attack(target, attackDamage);
+        enemy.attack(target);
+    }
+}
+
+function attackEnemies(source = null, type = 'player') {
+    source = source || game.player;
+    const enemies = game.scene.enemies;
+    const targets = getTargets(enemies, 1, `${type}:attack`);
+    const attackDamage = getAttackDamage(source);
+    for (const target of targets) {
+        source.attack(target, attackDamage);
     }
 }
 
@@ -99,14 +131,14 @@ function countEnemies(id = 'all') {
     let total = 0;
     for (const enemy of enemies) {
         if (enemy.dead) continue;
-        if (enemy.id === id || 'all' === id) total++;
+        if ('all' === id || enemy.id === id) total++;
     }
     return total;
 }
 
 function nextEnemiesDamage(enemies) {
     const playerMinDamage = MinAttackDamage(game.player);
-    const nextPlayerTargets = getTargets(enemies, 1, 'attack');
+    const nextPlayerTargets = getTargets(enemies, 1, 'player:attack');
     const eligibleEnemies = unitGroupAlive(arrayClone(enemies));
 
     eligibleEnemies.filter((e) => !nextPlayerTargets.includes(e));

@@ -80,7 +80,15 @@ function browserUI(game) {
     });
 
     game.ee.on('unit_dies', ({ unit }) => {
-        logger(`The ${unit.name} dies.`);
+        if (unit.type !== 'summoning') {
+            logger(`The ${unit.name} died.`);
+        } else {
+            logger(`The summoned ${unit.name} was destroyed.`);
+        }
+    });
+
+    game.ee.on('summoning_expired', ({ unit }) => {
+        logger(`The summoned ${unit.name} has expired.`);
     });
 
     game.ee.on('spell_cast', ({ spell, caster, from }) => {
@@ -144,6 +152,7 @@ function logger(msg) {
 
 function loggerReset() {
     loggerMessages.innerHTML = '';
+    loggerRoot.style.display = 'block';
     loggerActions.style.display = 'none';
 }
 
@@ -158,9 +167,4 @@ function displayActionButtons() {
 
     loggerActions.style.display = 'block';
     document.documentElement.scrollTop = 9999999;
-}
-
-function updateUrlParameter(url, param, value) {
-    var regex = new RegExp('(' + param + '=)[^&]+');
-    return url.replace(regex, '$1' + value);
 }
