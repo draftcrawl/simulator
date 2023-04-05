@@ -106,6 +106,10 @@ function browserUI(game) {
                 `${caster.name} (HP: ${getHitPointsText(caster)})
                 is reading a scroll of ${spell.name}...`
             );
+            logger(
+                `${caster.name} now has
+                ${caster.scrolls[spell.id]} Scroll of ${spell.name}.`
+            );
         }
     });
 
@@ -118,11 +122,16 @@ function browserUI(game) {
     game.ee.on('find_item', (evt) => {
         logger(
             `${game.player.name} (HP: ${getHitPointsText(game.player)})
-            find 1 ${evt.item}.`
+            find 1 ${evt.name}.`
         );
-        if ('potion' === evt.item) {
+        if ('potion' === evt.type) {
             logger(
                 `${game.player.name} now has ${game.player.potions} potions.`
+            );
+        } else if ('scroll' === evt.type) {
+            logger(
+                `${game.player.name} now has
+                ${game.player.scrolls[evt.id]} ${evt.name}.`
             );
         }
     });

@@ -110,7 +110,11 @@ function findPotion() {
     const player = game.player;
 
     player.potions++;
-    game.ee.emit('find_item', { item: 'potion' });
+    game.ee.emit('find_item', {
+        type: 'potion',
+        id: 'potion',
+        name: data.potion.name,
+    });
     game.scene.foundPotion = true;
 
     if (player.hitPointsMax - player.hitPoints >= data.potion.recover) {
@@ -123,7 +127,11 @@ function findPotion() {
 function findMagicScroll() {
     spell = getSpell();
     game.player.scrolls[spell.id] = (game.player.scrolls[spell.id] || 0) + 1;
-    game.ee.emit('find_item', { item: `scroll of ${spell.name}` });
+    game.ee.emit('find_item', {
+        type: 'scroll',
+        id: spell.id,
+        name: `Scroll of ${spell.name}`,
+    });
 }
 
 function dealTrapDamage() {
