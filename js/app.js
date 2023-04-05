@@ -22,9 +22,14 @@ if (!mult) {
         win: 0,
         lose: 0,
         total: mult,
+        dungeonSize: 0,
         count: 0,
     };
     function displayResults() {
+        console.log('Class: ' + playerClass);
+        console.log(
+            'Average Dungeon Size: ' + Math.round(state.dungeonSize / state.win)
+        );
         console.log(
             'Win Rate:',
             `${state.win}/${state.total}`,
@@ -35,7 +40,6 @@ if (!mult) {
         if (state.count === state.total) {
             return displayResults();
         }
-
         createGame({
             gm: urlParams.get('gm'),
             playerClass,
@@ -51,6 +55,7 @@ if (!mult) {
                 game.ee.on('victory', () => {
                     state.win++;
                     state.count++;
+                    state.dungeonSize += game.dungeonSize;
                     simulate();
                 });
             },
