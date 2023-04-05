@@ -7,16 +7,17 @@ data.class.swordman = {
     name: 'Swordman',
     type: 'class',
     id: 'swordman',
-    hitPoints: 25,
+    hitPoints: 24,
     damage: {
         bonus: 1,
         fixed: false,
     },
+    damageReduction: 1,
     init() {
         // takes -1 damage from creatures
         game.ee.on('damage', function (evt) {
             if (evt.type === 'attack' && evt.target.id === 'swordman') {
-                evt.amount -= 1;
+                evt.amount -= data.class.swordman.damageReduction;
             }
         });
         game.ee.on('min_attack_damage', function (evt) {
@@ -36,16 +37,33 @@ data.class.rogue = {
     name: 'Rogue',
     type: 'class',
     id: 'rogue',
-    hitPoints: 22,
+    hitPoints: 21,
     damage: {
-        bonus: 1,
+        bonus: 2,
         fixed: false,
     },
+    doubleDamageTargets: ['peon', 'grunt'],
     init() {
         // deals double damage in peons and grunts
         game.ee.on('damage', function (evt) {
             if ('attack' !== evt.type) return;
-            if (['grunt', 'peon'].includes(evt.target.id)) {
+            if ('rogue' !== evt.source.id) return;
+            const doubleDamageTargets = data.class.rogue.doubleDamageTargets;
+            if (doubleDamageTargets.includes(evt.target.id)) {
+                evt.amount *= 2;
+            }
+        });
+        game.ee.on('min_attack_damage', (evt) => {
+            if ('rogue' !== evt.source.id) return;
+            const doubleDamageTargets = data.class.rogue.doubleDamageTargets;
+            if (doubleDamageTargets.includes(evt.target.id)) {
+                evt.amount *= 2;
+            }
+        });
+        game.ee.on('max_attack_damage', (evt) => {
+            if ('rogue' !== evt.source.id) return;
+            const doubleDamageTargets = data.class.rogue.doubleDamageTargets;
+            if (doubleDamageTargets.includes(evt.target.id)) {
                 evt.amount *= 2;
             }
         });
@@ -56,33 +74,34 @@ data.class.hunter = {
     name: 'Hunter',
     type: 'class',
     id: 'hunter',
-    hitPoints: 20,
+    hitPoints: 22,
     damage: {
         bonus: 1,
         fixed: false,
     },
+    firstAttackBonus: 5,
     init() {
-        // deals +4 damage on first attack in every combat
-        game.ee.on('combat_start', function (evt) {
-            game.player.flags.attacked = false;
-        });
+        // deals more damage on first attack in every combat
         game.ee.on('damage', function (evt) {
             if ('attack' !== evt.type) return;
-            if (evt.source.id === 'hunter' && !game.player.flags.attacked) {
-                debugLog('HUNTER FIRST ATTACK BONUS APPLIED!');
-                game.player.flags.attacked = true;
-                evt.amount += 4;
+            if (evt.source.id === 'hunter' && game.player.flags.firstAttack) {
+                // debugLog('HUNTER FIRST ATTACK BONUS APPLIED!');
+                game.player.flags.firstAttack = false;
+                evt.amount += data.class.hunter.firstAttackBonus;
             }
         });
         game.ee.on('min_attack_damage', function (evt) {
-            if (evt.source.id === 'hunter' && !evt.source.flags.attacked) {
-                evt.amount += 4;
+            if (evt.source.id === 'hunter' && evt.source.flags.firstAttack) {
+                evt.amount += data.class.hunter.firstAttackBonus;
             }
         });
         game.ee.on('max_attack_damage', function (evt) {
-            if (evt.source.id === 'hunter' && !evt.source.flags.attacked) {
-                evt.amount += 4;
+            if (evt.source.id === 'hunter' && evt.source.flags.firstAttack) {
+                evt.amount += data.class.hunter.firstAttackBonus;
             }
+        });
+        game.ee.on('combat_start', function (evt) {
+            game.player.flags.firstAttack = true;
         });
     },
 };
@@ -91,15 +110,16 @@ data.class.wizard = {
     name: 'Wizard',
     type: 'class',
     id: 'wizard',
-    hitPoints: 20,
+    hitPoints: 18,
+    spellsCount: 2,
     damage: {
         bonus: 0,
         fixed: false,
     },
     init() {
-        // learns 2 random spells on game init
+        // learns random spells on game init
         game.ee.on('player_created', function (evt) {
-            let count = 2;
+            let count = data.class.wizard.spellsCount;
             const playerSpells = evt.player.spellsLearned;
             while (count-- > 0) {
                 const spell = getSpell();
@@ -114,9 +134,9 @@ data.class.monk = {
     name: 'Monk',
     type: 'class',
     id: 'monk',
-    hitPoints: 22,
+    hitPoints: 21,
     damage: {
-        bonus: 1,
+        bonus: 2,
         fixed: false,
     },
     init() {
@@ -137,11 +157,12 @@ data.class.alchemist = {
         bonus: 1,
         fixed: false,
     },
-    damageAcid: 10,
+    damageAcid: 8,
+    startingPotions: 2,
     init() {
         // start the game with 1 potion
         game.ee.on('player_created', function (evt) {
-            evt.player.potions += 1;
+            evt.player.potions += data.class.alchemist.startingPotions;
         });
     },
 };
@@ -157,7 +178,7 @@ data.creature.peon = {
         bonus: 2,
         fixed: true,
     },
-    hitPoints: 4,
+    hitPoints: 5,
 };
 
 data.creature.grunt = {
@@ -168,7 +189,7 @@ data.creature.grunt = {
         bonus: 3,
         fixed: true,
     },
-    hitPoints: 12,
+    hitPoints: 9,
 };
 
 data.creature.brute = {
@@ -179,7 +200,7 @@ data.creature.brute = {
         bonus: 6,
         fixed: true,
     },
-    hitPoints: 16,
+    hitPoints: 14,
 };
 
 // BOSS
@@ -219,7 +240,7 @@ data.spell.lightning = {
         const enemies = game.scene.enemies;
         const targets = getTargets(enemies, 3, 'spell:lightning');
         for (const target of targets) {
-            dealDamage(4, target, caster, 'spell:lightning');
+            dealDamage(5, target, caster, 'spell:lightning');
         }
     },
 };
@@ -266,20 +287,20 @@ data.spell.heal = {
     },
 };
 
-data.spell.lifeSteal = {
-    name: 'Life Steal',
+data.spell.lifeDrain = {
+    name: 'Life Drain',
     type: 'spell',
-    id: 'lifeSteal',
+    id: 'lifeDrain',
     recover: 5,
     cast(caster) {
         const enemies = game.scene.enemies;
-        const target = getTargets(enemies, 1, 'spell:lifeSteal')[0];
+        const target = getTargets(enemies, 1, 'spell:lifeDrain')[0];
         if (target) {
-            dealDamage(5, target, caster, 'spell:lifeSteal');
+            dealDamage(5, target, caster, 'spell:lifeDrain');
             recoverHitPoints(
                 caster,
-                data.spell.lifeSteal.recover,
-                'spell:lifeSteal'
+                data.spell.lifeDrain.recover,
+                'spell:lifeDrain'
             );
         }
     },
@@ -292,7 +313,7 @@ data.summoning.spiritualBeast = {
     type: 'summoning',
     id: 'spiritualBeast',
     damage: {
-        bonus: 0,
+        bonus: 2,
         fixed: false,
     },
     hitPoints: 5,
@@ -306,7 +327,7 @@ data.potion = {
 // TRAP
 data.trap = {
     damage: {
-        bonus: 4,
+        bonus: 2,
         fixed: false,
     },
 };
