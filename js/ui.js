@@ -7,7 +7,7 @@ function browserUI(game) {
         logger(`Dungeon Size: ${game.dungeonSize}`);
         logger(`Class: ${game.player.name}`);
         if (Object.keys(game.player.spellsLearned)) {
-            logger(`Spells: ${getPlayerSpellsName()}`);
+            logger(`Spells: ${getPlayerSpellsName() || '-'}`);
         }
         logger(`HP: ${game.player.hitPointsMax}`);
         logger(`Attack: 1d6+${game.player.damage.bonus}`);
