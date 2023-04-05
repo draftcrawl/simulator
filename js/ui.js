@@ -113,7 +113,7 @@ function browserUI(game) {
 
     game.ee.on('find_item', (evt) => {
         logger(
-            `${game.player.name} (${getHitPointsText(game.player)})
+            `${game.player.name} (HP: ${getHitPointsText(game.player)})
             find 1 ${evt.item}.`
         );
         if ('potion' === evt.item) {
@@ -130,10 +130,10 @@ function browserUI(game) {
                 hitPointsMax: evt.target.hitPointsMax,
             };
             logger(
-                `${evt.target.name} (${getHitPointsText(oldHitPoints)})
+                `${evt.target.name} (HP: ${getHitPointsText(oldHitPoints)})
                 drank a potion.`
             );
-            logger(`${evt.target.name} (${getHitPointsText(evt.target)})
+            logger(`${evt.target.name} (HP: ${getHitPointsText(evt.target)})
             now has ${evt.target.potions} potions.`);
         }
         logger(`${evt.target.name} restored ${evt.amount} HP.`);
