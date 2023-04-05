@@ -110,6 +110,8 @@ function findPotion() {
 
     if (player.hitPointsMax - player.hitPoints >= data.potion.recover) {
         return drinkPotion();
+    } else if (player.hitPoints <= Math.floor(player.hitPointsMax / 2)) {
+        return drinkPotion();
     }
 }
 

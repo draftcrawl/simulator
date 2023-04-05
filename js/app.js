@@ -7,10 +7,17 @@ if (!mult) {
         gm: urlParams.get('gm'),
         playerClass: urlParams.get('class') || undefined,
         debug: urlParams.get('debug'),
-        actionInterval: urlParams.get('i') || 50,
+        actionInterval: urlParams.get('i') || 25,
         beforeInit: browserUI,
     });
 } else {
+    if (mult <= 0) {
+        throw new Error('query argument "mult" must be greater than zero');
+    }
+    const playerClass = urlParams.get('class') || undefined;
+    if (!playerClass) {
+        throw new Error('query argument "class" is mandatory with "mult"');
+    }
     global.state = {
         win: 0,
         lose: 0,
@@ -28,9 +35,10 @@ if (!mult) {
         if (state.count === state.total) {
             return displayResults();
         }
+
         createGame({
             gm: urlParams.get('gm'),
-            playerClass: urlParams.get('class') || undefined,
+            playerClass,
             debug: urlParams.get('debug'),
             actionInterval: 0,
             beforeInit: (game) => {

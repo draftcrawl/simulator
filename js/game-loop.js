@@ -78,7 +78,7 @@ function createGame(args) {
                     evt.player.scrolls.freezingRay = 5;
                     evt.player.scrolls.heal = 5;
                     evt.player.scrolls.lightning = 5;
-                    evt.player.scrolls.lifeSteal = 5;
+                    evt.player.scrolls.lifeDrain = 5;
                     evt.player.scrolls.summonBeast = 5;
                 }
             });

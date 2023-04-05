@@ -8,6 +8,7 @@ function decidePlayerAction() {
     const currentHP = player.hitPoints;
     const missingHP = player.hitPointsMax - currentHP;
     const enemies = scene.enemies;
+    const nextTarget = getTargets(enemies, 1, 'player:atack');
 
     // Healing behaviors
     if (player.potions > 0 && currentHP <= nextEnemiesDamage(enemies)) {
@@ -30,15 +31,26 @@ function decidePlayerAction() {
         missingHP >= data.spell.heal.recover
     ) {
         return castSpell('heal');
+    } else if (
+        hasSpell('heal') &&
+        !facingEnemy('boss', 'brute') &&
+        1 === countEnemies() &&
+        missingHP >= data.spell.heal.recover
+    ) {
+        return castSpell('heal');
     }
 
-    // Alchemist acid againts brutes or boss
+    if (MinAttackDamage(player, nextTarget) >= nextTarget.hitPoints) {
+        return attackEnemies();
+    }
+
     if (
         player.id === 'alchemist' &&
         player.potions > 1 &&
         facingEnemy('brute') &&
         getEnemy('brute').hitPoints >= 3
     ) {
+        // Alchemist acid againts brutes or boss
         // throw acid in Brutes
         const target = getEnemy('brute');
         return throwAcid(target);
@@ -53,26 +65,35 @@ function decidePlayerAction() {
         return throwAcid(target);
     }
 
-    // Offensive behaviors
     if (hasSpell('lightning') && countEnemies('peon') >= 2) {
         return castSpell('lightning');
     } else if (
+        hasSpell('lifeDrain') &&
+        missingHP >= data.spell.lifeDrain.recover
+    ) {
+        return castSpell('lifeDrain');
+    }
+
+    if (
+        'wizard' !== player.id &&
+        !facingEnemy('grunt') &&
+        countEnemies('peon') <= 2
+    ) {
+        return attackEnemies();
+    }
+
+    if (
         hasSpell('summonBeast') &&
         !hasBeast() &&
-        (facingEnemy('boss') || countEnemies() > 2)
+        (facingEnemy('boss') || countEnemies() === 3)
     ) {
-        // summon a beast
+        // think before spend scroll of summon beast
         return castSpell('summonBeast');
-    } else if (hasSpell('summonBeast', true)) {
-        // summon a beast
+    } else if (hasSpell('summonBeast', true) && !hasBeast()) {
+        // always cast spell of summon a beast
         return castSpell('summonBeast');
     } else if (player.id === 'hunter' && !player.flags.attacked) {
         return attackEnemies();
-    } else if (
-        hasSpell('lifeSteal') &&
-        missingHP >= data.spell.lifeSteal.recover
-    ) {
-        return castSpell('lifeSteal');
     } else if (hasSpell('freezingRay')) {
         return castSpell('freezingRay');
     } else if (hasSpell('fireball')) {
@@ -137,36 +158,37 @@ function countEnemies(id = 'all') {
 }
 
 function nextEnemiesDamage(enemies) {
-    const playerMinDamage = MinAttackDamage(game.player);
     const nextPlayerTargets = getTargets(enemies, 1, 'player:attack');
     const eligibleEnemies = unitGroupAlive(arrayClone(enemies));
 
     eligibleEnemies.filter((e) => !nextPlayerTargets.includes(e));
-    nextPlayerTargets.filter((e) => e.hitPoints > playerMinDamage);
+    nextPlayerTargets.filter(
+        (e) => e.hitPoints > MinAttackDamage(game.player, e)
+    );
     eligibleEnemies.concat(nextPlayerTargets);
 
     let totalDamage = 0;
     for (const enemy of eligibleEnemies) {
-        totalDamage += MaxAttackDamage(enemy);
+        totalDamage += MaxAttackDamage(enemy, game.player);
     }
 
     return totalDamage;
 }
 
-function MinAttackDamage(source) {
+function MinAttackDamage(source, target = null) {
     const amount = source.damage.fixed
         ? source.damage.bonus
         : 1 + source.damage.bonus;
-    const eventData = { source, amount };
+    const eventData = { source, target, amount };
     game.ee.emit('min_attack_damage', eventData);
     return eventData.amount;
 }
 
-function MaxAttackDamage(source) {
+function MaxAttackDamage(source, target = null) {
     const amount = source.damage.fixed
         ? source.damage.bonus
         : 6 + source.damage.bonus;
-    const eventData = { source, amount };
+    const eventData = { source, target, amount };
     game.ee.emit('max_attack_damage', eventData);
     return eventData.amount;
 }

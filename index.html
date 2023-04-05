@@ -11,14 +11,16 @@
         <div id="logger" style="display: none">
             <div class="content"></div>
             <div class="actions">
+                <button onclick="document.documentElement.scrollTop = 0">
+                    Back to top
+                </button>
                 <button onclick="window.location = urlSameSeed">
                     Refresh (same seed)
                 </button>
-                <button onclick="window.location = urlRandomSeed">
+                <button
+                    onclick="confirm('Are you sure?') && (window.location = urlRandomSeed)"
+                >
                     Refresh (random seed)
-                </button>
-                <button onclick="document.documentElement.scrollTop = 0">
-                    Back to top
                 </button>
             </div>
         </div>
