@@ -93,7 +93,7 @@ function decidePlayerAction() {
     } else if (hasSpell('summonBeast', true) && !hasBeast()) {
         // always cast spell of summon a beast
         return castSpell('summonBeast');
-    } else if (player.id === 'hunter' && !player.flags.attacked) {
+    } else if (player.id === 'hunter' && player.flags.firstAttack) {
         return attackEnemies();
     } else if (hasSpell('freezingRay')) {
         return castSpell('freezingRay');
