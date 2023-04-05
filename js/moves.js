@@ -5,7 +5,6 @@ function attack(source, target, damage = null) {
 
 function getTargets(unitGroup, quantity = 1, type = null, order = 'ASC') {
     const alive = unitGroupAlive(unitGroup);
-
     let eventData = { order, type };
     game.ee.emit('get_targets_order', eventData);
     const compare =
