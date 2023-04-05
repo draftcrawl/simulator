@@ -7,9 +7,9 @@ data.class.swordman = {
     name: 'Swordman',
     type: 'class',
     id: 'swordman',
-    hitPoints: 30,
+    hitPoints: 25,
     damage: {
-        bonus: 1,
+        bonus: 2,
         fixed: false,
     },
     init() {

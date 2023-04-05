@@ -4,8 +4,9 @@ async function createScene(type, args = {}) {
     game.ee.emit('scene_start', { type, ...args });
 
     if ('combat' === type) {
+        game.scene.allies = [game.player];
         if (args.boss) {
-            await createBossFight();
+            await createBossBattle();
         } else {
             await createCombat();
         }
@@ -24,7 +25,7 @@ async function createCombat() {
     let round = 1;
 
     game.scene.enemies = enemies;
-    game.scene.allies = [player];
+
     game.ee.emit('combat_start', { enemies });
 
     while (true) {
@@ -57,21 +58,7 @@ async function createCombat() {
     checkGameOver();
 }
 
-function createEvent() {
-    const eventList = [
-        findMagicScroll,
-        findMagicScroll,
-        findMagicScroll,
-        findPotion,
-        findPotion,
-        dealTrapDamage,
-    ];
-    const selected = randomArrayItem(eventList);
-
-    return selected();
-}
-
-async function createBossFight() {
+async function createBossBattle() {
     const player = game.player;
     const boss = createBoss();
     const enemies = [boss];
@@ -88,7 +75,7 @@ async function createBossFight() {
         decidePlayerAction();
 
         if (!boss.dead) {
-            boss.attack(player);
+            decideEnemyAction(boss);
         }
 
         if (player.dead || boss.dead) break;
@@ -97,6 +84,20 @@ async function createBossFight() {
     }
 
     checkGameOver();
+}
+
+function createEvent() {
+    const eventList = [
+        findMagicScroll,
+        findMagicScroll,
+        findMagicScroll,
+        findPotion,
+        findPotion,
+        dealTrapDamage,
+    ];
+    const selected = randomArrayItem(eventList);
+
+    return selected();
 }
 
 function findPotion() {
