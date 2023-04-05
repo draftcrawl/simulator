@@ -78,8 +78,9 @@ async function createBossBattle() {
             decideEnemyAction(boss);
         }
 
-        if (player.dead || boss.dead) break;
+        game.ee.emit('combat_round_end', { number: round });
 
+        if (player.dead || boss.dead) break;
         round++;
     }
 
