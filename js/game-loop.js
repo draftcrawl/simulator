@@ -14,7 +14,7 @@ function createGame(args) {
             this.globalEvents();
 
             this.player = createPlayer(args.playerClass);
-            this.dungeonSize = roll() + 9;
+            this.dungeonSize = data.dungeonSize();
             this.sceneCount = 1;
 
             if (args.beforeInit) args.beforeInit(this);

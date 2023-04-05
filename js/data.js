@@ -1,5 +1,7 @@
 global.data = {};
 
+data.dungeonSize = () => roll() + 6;
+
 // CLASSES
 data.class = {};
 
@@ -7,7 +9,7 @@ data.class.swordman = {
     name: 'Swordman',
     type: 'class',
     id: 'swordman',
-    hitPoints: 24,
+    hitPoints: 22,
     damage: {
         bonus: 1,
         fixed: false,
@@ -37,7 +39,7 @@ data.class.rogue = {
     name: 'Rogue',
     type: 'class',
     id: 'rogue',
-    hitPoints: 21,
+    hitPoints: 20,
     damage: {
         bonus: 2,
         fixed: false,
@@ -74,12 +76,12 @@ data.class.hunter = {
     name: 'Hunter',
     type: 'class',
     id: 'hunter',
-    hitPoints: 22,
+    hitPoints: 20,
     damage: {
         bonus: 1,
         fixed: false,
     },
-    firstAttackBonus: 5,
+    firstAttackBonus: 6,
     init() {
         // deals more damage on first attack in every combat
         game.ee.on('damage', function (evt) {
@@ -134,7 +136,7 @@ data.class.monk = {
     name: 'Monk',
     type: 'class',
     id: 'monk',
-    hitPoints: 21,
+    hitPoints: 20,
     damage: {
         bonus: 2,
         fixed: false,
@@ -152,7 +154,7 @@ data.class.alchemist = {
     name: 'Alchemist',
     type: 'class',
     id: 'alchemist',
-    hitPoints: 20,
+    hitPoints: 18,
     damage: {
         bonus: 1,
         fixed: false,
@@ -189,7 +191,7 @@ data.creature.grunt = {
         bonus: 3,
         fixed: true,
     },
-    hitPoints: 9,
+    hitPoints: 10,
 };
 
 data.creature.brute = {
@@ -197,10 +199,10 @@ data.creature.brute = {
     type: 'creature',
     id: 'brute',
     damage: {
-        bonus: 6,
+        bonus: 5,
         fixed: true,
     },
-    hitPoints: 14,
+    hitPoints: 13,
 };
 
 // BOSS
