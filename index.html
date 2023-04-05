@@ -8,7 +8,20 @@
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
-        <div id="app"></div>
+        <div id="logger">
+            <div class="content"></div>
+            <div class="actions">
+                <button onclick="window.location = urlSameSeed">
+                    Refresh (same seed)
+                </button>
+                <button onclick="window.location = urlRandomSeed">
+                    Refresh (random seed)
+                </button>
+                <button onclick="document.documentElement.scrollTop = 0">
+                    Back to top
+                </button>
+            </div>
+        </div>
         <script src="js/rng.js"></script>
         <script src="js/libs.js"></script>
         <script src="js/helpers.js"></script>

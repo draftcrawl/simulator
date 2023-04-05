@@ -7,7 +7,7 @@ if (!mult) {
         gm: urlParams.get('gm'),
         playerClass: urlParams.get('class') || undefined,
         debug: urlParams.get('debug'),
-        actionInterval: urlParams.get('i') || 1000,
+        actionInterval: urlParams.get('i') || 100,
         beforeInit: browserUI,
     });
 } else {

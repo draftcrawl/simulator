@@ -194,8 +194,8 @@ function stunUnit(unit) {
 }
 
 function checkSeed(seed) {
-    if ('number' !== typeof seed || Number.isNaN(seed)) {
-        throw new Error('Seed must be a integer decimal');
+    if ('number' !== typeof seed || Number.isNaN(seed) || seed <= 0) {
+        throw new Error('Seed must be a positive integer decimal');
     }
     return seed;
 }

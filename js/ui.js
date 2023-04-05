@@ -1,6 +1,8 @@
 function browserUI(game) {
     game.ee.on('run_start', () => {
-        logger('=== Game Started ===');
+        loggerReset();
+
+        logger('==== Game Started ====');
         logger(`Seed: ${game.args.seed}`);
         logger(`Dungeon Size: ${game.dungeonSize}`);
         logger(`Class: ${game.player.name}`);
@@ -14,10 +16,10 @@ function browserUI(game) {
 
     game.ee.on('scene_start', (evt) => {
         if (evt.type === 'combat' && evt.boss) {
-            logger(`======= Final Scene (${evt.type}) =======`);
+            logger(`=== Final Scene (${evt.type}) ===`);
         } else {
             logger(
-                `======= Scene ${evt.number}/${game.dungeonSize} (${evt.type}) =======`
+                `=== Scene ${evt.number}/${game.dungeonSize} (${evt.type}) ===`
             );
         }
     });
@@ -25,11 +27,13 @@ function browserUI(game) {
     game.ee.on('game_over', () => {
         logger('=== Game Over ===');
         logger(`You lose!`);
+        displayActionButtons();
     });
 
     game.ee.on('victory', () => {
         logger('=== VICTORY ===');
         logger(`You win!`);
+        displayActionButtons();
     });
 
     game.ee.on('combat_start', (evt) => {
@@ -128,14 +132,35 @@ function browserUI(game) {
     });
 }
 
-const loggerElement = document.querySelector('#app');
+const loggerRoot = document.querySelector('#logger');
+const loggerMessages = loggerRoot.querySelector('.content');
+const loggerActions = loggerRoot.querySelector('.actions');
 function logger(msg) {
     const el = document.createElement('p');
     el.textContent = msg;
-    loggerElement.appendChild(el);
+    loggerMessages.appendChild(el);
     document.documentElement.scrollTop = 9999999;
 }
 
 function loggerReset() {
-    loggerElement.innerHTML = '';
+    loggerMessages.innerHTML = '';
+    loggerActions.style.display = 'none';
+}
+
+function displayActionButtons() {
+    const url = new URL(location.href);
+
+    url.searchParams.set('seed', game.args.seed);
+    window.urlSameSeed = url.href;
+
+    url.searchParams.set('seed', '');
+    window.urlRandomSeed = url.href;
+
+    loggerActions.style.display = 'block';
+    document.documentElement.scrollTop = 9999999;
+}
+
+function updateUrlParameter(url, param, value) {
+    var regex = new RegExp('(' + param + '=)[^&]+');
+    return url.replace(regex, '$1' + value);
 }
