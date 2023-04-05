@@ -199,10 +199,10 @@ data.creature.brute = {
     type: 'creature',
     id: 'brute',
     damage: {
-        bonus: 5,
+        bonus: 6,
         fixed: true,
     },
-    hitPoints: 13,
+    hitPoints: 14,
 };
 
 // BOSS
@@ -315,7 +315,7 @@ data.summoning.spiritualBeast = {
     type: 'summoning',
     id: 'spiritualBeast',
     damage: {
-        bonus: 2,
+        bonus: 0,
         fixed: false,
     },
     hitPoints: 5,

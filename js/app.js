@@ -1,7 +1,7 @@
 const urlParams = new URLSearchParams(window.location.search);
-const mult = urlParams.get('mult') | 0;
+const winrate = urlParams.get('winrate');
 
-if (!mult) {
+if (!winrate) {
     createGame({
         seed: urlParams.get('seed'),
         gm: urlParams.get('gm'),
@@ -11,29 +11,29 @@ if (!mult) {
         beforeInit: browserUI,
     });
 } else {
-    if (mult <= 0) {
-        throw new Error('query argument "mult" must be greater than zero');
-    }
-    const playerClass = urlParams.get('class') || undefined;
-    if (!playerClass) {
-        throw new Error('query argument "class" is mandatory with "mult"');
-    }
+    const total = 1000;
+    const playerClass = getClass(winrate);
     global.state = {
         win: 0,
         lose: 0,
-        total: mult,
+        total,
         dungeonSize: 0,
         count: 0,
     };
+
+    loggerReset();
+    logger(`Simulating ${total} runs...`);
+
     function displayResults() {
-        console.log('Class: ' + playerClass);
-        console.log(
-            'Average Dungeon Size: ' + Math.round(state.dungeonSize / state.win)
+        //loggerReset();
+        displayActionButtons(true, false, false);
+        logger('=== Results ===');
+        logger('Class: ' + playerClass.name);
+        logger(
+            'Win Rate: ' + `${((state.win / state.total) * 100).toFixed(1)}%`
         );
-        console.log(
-            'Win Rate:',
-            `${state.win}/${state.total}`,
-            `(${((state.win / state.total) * 100).toFixed(2)}%)`
+        logger(
+            'Average Dungeon Size: ' + Math.round(state.dungeonSize / state.win)
         );
     }
     function simulate() {
@@ -42,7 +42,7 @@ if (!mult) {
         }
         createGame({
             gm: urlParams.get('gm'),
-            playerClass,
+            playerClass: playerClass.id,
             debug: urlParams.get('debug'),
             actionInterval: 0,
             beforeInit: (game) => {

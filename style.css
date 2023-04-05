@@ -1,0 +1,15 @@
+#logger #logger-actions > * {
+    display: none;
+}
+
+#logger #logger-actions.same-seed .btn-same-seed {
+    display: inline-block;
+}
+
+#logger #logger-actions.random-seed .btn-random-seed {
+    display: inline-block;
+}
+
+#logger #logger-actions.back-to-top .btn-back-to-top {
+    display: inline-block;
+}

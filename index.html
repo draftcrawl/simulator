@@ -9,15 +9,22 @@
     </head>
     <body>
         <div id="logger" style="display: none">
-            <div class="content"></div>
-            <div class="actions">
-                <button onclick="document.documentElement.scrollTop = 0">
+            <div id="logger-content"></div>
+            <div id="logger-actions">
+                <button
+                    class="btn-back-to-top"
+                    onclick="document.documentElement.scrollTop = 0"
+                >
                     Back to top
                 </button>
-                <button onclick="window.location = urlSameSeed">
+                <button
+                    class="btn-same-seed"
+                    onclick="window.location = urlSameSeed"
+                >
                     Refresh (same seed)
                 </button>
                 <button
+                    class="btn-random-seed"
                     onclick="confirm('Are you sure?') && (window.location = urlRandomSeed)"
                 >
                     Refresh (random seed)

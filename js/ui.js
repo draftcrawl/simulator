@@ -145,8 +145,8 @@ function browserUI(game) {
 }
 
 const loggerRoot = document.querySelector('#logger');
-const loggerMessages = loggerRoot.querySelector('.content');
-const loggerActions = loggerRoot.querySelector('.actions');
+const loggerMessages = loggerRoot.querySelector('#logger-content');
+const loggerActions = loggerRoot.querySelector('#logger-actions');
 function logger(msg) {
     const el = document.createElement('p');
     el.textContent = msg;
@@ -158,17 +158,33 @@ function loggerReset() {
     loggerMessages.innerHTML = '';
     loggerRoot.style.display = 'block';
     loggerActions.style.display = 'none';
+    loggerActions.className = '';
 }
 
-function displayActionButtons() {
+function displayActionButtons(
+    randomSeed = true,
+    sameSeed = true,
+    backToTop = true
+) {
     const url = new URL(location.href);
+    loggerActions.className = '';
 
-    url.searchParams.set('seed', game.args.seed);
-    window.urlSameSeed = url.href;
+    if (sameSeed) {
+        url.searchParams.set('seed', game.args.seed);
+        window.urlSameSeed = url.href;
+        loggerActions.classList.add('same-seed');
+    }
 
-    url.searchParams.set('seed', '');
-    window.urlRandomSeed = url.href;
+    if (randomSeed) {
+        url.searchParams.set('seed', '');
+        window.urlRandomSeed = url.href;
+        loggerActions.classList.add('random-seed');
+    }
+
+    if (backToTop) {
+        loggerActions.classList.add('back-to-top');
+        document.documentElement.scrollTop = 9999999;
+    }
 
     loggerActions.style.display = 'block';
-    document.documentElement.scrollTop = 9999999;
 }
