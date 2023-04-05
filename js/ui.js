@@ -37,7 +37,11 @@ function browserUI(game) {
     });
 
     game.ee.on('combat_start', (evt) => {
-        logger(`${game.player.name} vs ${getCreatureGroupName(evt.enemies)}`);
+        logger(
+            `${game.player.name}
+            (HP: ${getHitPointsText(game.player)}) vs
+            ${getCreatureGroupName(evt.enemies)}`
+        );
     });
 
     game.ee.on('combat_round_start', (evt) => {
