@@ -8,9 +8,6 @@ if (!winrate) {
     if (!playerClass) {
         const painel = document.querySelector('.painel');
         painel.style.display = 'block';
-        if (playerClass) {
-            painel.querySelector('#player-class').value = playerClass;
-        }
         painel.querySelector('#game-seed').value = seed || '';
     } else {
         try {
