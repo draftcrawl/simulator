@@ -2,7 +2,7 @@ function browserUI(game) {
     game.ee.on('run_start', () => {
         loggerReset();
 
-        logger('==== Game Started ====');
+        logger('<b>==== Game Started ====</b>');
         logger(`Seed: ${game.args.seed}`);
         logger(`Dungeon Size: ${game.dungeonSize}`);
         logger(`Class: ${game.player.name}`);
@@ -16,10 +16,10 @@ function browserUI(game) {
 
     game.ee.on('scene_start', (evt) => {
         if (evt.type === 'combat' && evt.boss) {
-            logger(`=== Final Scene (${evt.type}) ===`);
+            logger(`<b>=== Final Scene (${evt.type}) ===</b>`);
         } else {
             logger(
-                `=== Scene ${evt.number}/${game.dungeonSize} (${evt.type}) ===`
+                `<b>=== Scene ${evt.number}/${game.dungeonSize} (${evt.type}) ===</b>`
             );
         }
     });
@@ -45,14 +45,14 @@ function browserUI(game) {
     });
 
     game.ee.on('combat_round_start', (evt) => {
-        logger(`> Round ${evt.number}`);
+        logger(`<u>ROUND ${evt.number}</u>`);
     });
 
     game.ee.on('unit_cant_attack', ({ unit }) => {
         if (unit.flags.stunned) {
             logger(
-                `${unit.name} (HP: ${getHitPointsText(unit)})
-                is stunned and cannot attack this round.`
+                `<i>${unit.name} (HP: ${getHitPointsText(unit)})
+                is stunned and cannot attack this round.</i>`
             );
             return;
         }
@@ -71,7 +71,7 @@ function browserUI(game) {
     game.ee.on('damaged', (evt) => {
         if ('trap' !== evt.type) return;
         logger(
-            `${evt.target.name} stepped on a trap and took ${evt.amount} damage.`
+            `<i>${evt.target.name} stepped on a trap and took ${evt.amount} damage.</i>`
         );
     });
 
@@ -92,19 +92,19 @@ function browserUI(game) {
     });
 
     game.ee.on('summoning_expired', ({ unit }) => {
-        logger(`The summoned ${unit.name} has expired.`);
+        logger(`<i>The summoned ${unit.name} has expired.</i>`);
     });
 
     game.ee.on('spell_cast', ({ spell, caster, from }) => {
         if ('spells' === from) {
             logger(
-                `${caster.name} (HP: ${getHitPointsText(caster)})
-                is casting ${spell.name}...`
+                `<i>${caster.name} (HP: ${getHitPointsText(caster)})
+                is casting ${spell.name}...</i>`
             );
         } else {
             logger(
-                `${caster.name} (HP: ${getHitPointsText(caster)})
-                is reading a scroll of ${spell.name}...`
+                `<i>${caster.name} (HP: ${getHitPointsText(caster)})
+                is reading a scroll of ${spell.name}...</i>`
             );
             logger(
                 `${caster.name} now has
@@ -121,8 +121,8 @@ function browserUI(game) {
 
     game.ee.on('find_item', (evt) => {
         logger(
-            `${game.player.name} (HP: ${getHitPointsText(game.player)})
-            find 1 ${evt.name}.`
+            `<i>${game.player.name} (HP: ${getHitPointsText(game.player)})
+            find 1 ${evt.name}.</i>`
         );
         if ('potion' === evt.type) {
             logger(
@@ -158,7 +158,7 @@ const loggerMessages = loggerRoot.querySelector('#logger-content');
 const loggerActions = loggerRoot.querySelector('#logger-actions');
 function logger(msg) {
     const el = document.createElement('p');
-    el.textContent = msg;
+    el.innerHTML = msg;
     loggerMessages.appendChild(el);
     document.documentElement.scrollTop = 9999999;
 }
