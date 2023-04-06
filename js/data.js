@@ -18,7 +18,7 @@ data.class.swordman = {
     },
     damageReduction: 1,
     special: () =>
-        `When attacked, reduces -${data.class.swordman.damageReduction} damage.`,
+        `When attacked, you takes -${data.class.swordman.damageReduction} damage.`,
     init() {
         // takes -1 damage from creatures
         game.ee.on('damage', function (evt) {
