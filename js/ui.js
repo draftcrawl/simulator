@@ -6,11 +6,12 @@ function browserUI(game) {
         logger(`Seed: ${game.args.seed}`);
         logger(`Dungeon Size: ${game.dungeonSize}`);
         logger(`Class: ${game.player.name}`);
-        if (Object.keys(game.player.spellsLearned)) {
-            logger(`Spells: ${getPlayerSpellsName() || '-'}`);
-        }
         logger(`HP: ${game.player.hitPointsMax}`);
         logger(`Attack: 1d6+${game.player.damage.bonus}`);
+        logger(`Special: ${game.player.special()}`);
+        if (Object.keys(game.player.spellsLearned).length > 0) {
+            logger(`Spells: ${getPlayerSpellsName() || '-'}`);
+        }
         game.args.gm && logger(`GM Enabled: Yes`);
     });
 

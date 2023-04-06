@@ -17,6 +17,8 @@ data.class.swordman = {
         fixed: false,
     },
     damageReduction: 1,
+    special: () =>
+        `When attacked, reduces -${data.class.swordman.damageReduction} damage.`,
     init() {
         // takes -1 damage from creatures
         game.ee.on('damage', function (evt) {
@@ -47,6 +49,7 @@ data.class.rogue = {
         fixed: false,
     },
     doubleDamageTargets: ['peon', 'grunt'],
+    special: () => `Your attacks deal double damage in peons and grunts.`,
     init() {
         // deals double damage in peons and grunts
         game.ee.on('damage', function (evt) {
@@ -84,6 +87,8 @@ data.class.hunter = {
         fixed: false,
     },
     firstAttackBonus: 5,
+    special: () =>
+        `In every combat, your first attack deal +${data.class.hunter.firstAttackBonus} damage.`,
     init() {
         // deals more damage on first attack in every combat
         game.ee.on('damage', function (evt) {
@@ -115,11 +120,13 @@ data.class.wizard = {
     type: 'class',
     id: 'wizard',
     hitPoints: 18,
-    spellsCount: 2,
     damage: {
         bonus: 0,
         fixed: false,
     },
+    spellsCount: 2,
+    special: () =>
+        `Starts learning ${data.class.wizard.spellsCount} random spells.`,
     init() {
         // learns random spells on game init
         game.ee.on('player_created', function (evt) {
@@ -143,11 +150,14 @@ data.class.monk = {
         bonus: 2,
         fixed: false,
     },
+    targetsPerAttack: 3,
+    special: () =>
+        `You attacks hit ${data.class.monk.targetsPerAttack} creatures at once.`,
     init() {
         // hit 2 creatures at once
         game.ee.on('get_number_of_targets', function (evt) {
             if ('player:attack' !== evt.type) return;
-            evt.quantity = 3;
+            evt.quantity = data.class.monk.targetsPerAttack;
         });
     },
 };
@@ -163,6 +173,8 @@ data.class.alchemist = {
     },
     damageAcid: 8,
     startingPotions: 2,
+    special: () =>
+        `Starts with ${data.class.alchemist.startingPotions} potions. You can turn 1 potion into 1 acid (deal 1d6+${data.class.alchemist.damageAcid} damage).`,
     init() {
         // start the game with 1 potion
         game.ee.on('player_created', function (evt) {
