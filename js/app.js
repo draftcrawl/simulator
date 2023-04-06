@@ -11,7 +11,7 @@ if (!winrate) {
         beforeInit: browserUI,
     });
 } else {
-    const total = 1000;
+    const total = 250;
     const playerClass = getClass(winrate);
     global.state = {
         win: 0,
@@ -22,7 +22,7 @@ if (!winrate) {
     };
 
     loggerReset();
-    logger(`Simulating ${total} runs...`);
+    // logger(`Simulating ${total} runs...`);
 
     function displayResults() {
         //loggerReset();
@@ -32,9 +32,10 @@ if (!winrate) {
         logger(
             'Win Rate: ' + `${((state.win / state.total) * 100).toFixed(1)}%`
         );
-        logger(
-            'Average Dungeon Size: ' + Math.round(state.dungeonSize / state.win)
-        );
+        setTimeout(() => reload(), 2000);
+    }
+    function reload() {
+        window.location = location.href;
     }
     function simulate() {
         if (state.count === state.total) {
