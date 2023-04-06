@@ -27,13 +27,13 @@ function browserUI(game) {
 
     game.ee.on('game_over', () => {
         logger('=== Game Over ===');
-        logger(`You lose!`);
+        logger(`<b red>You lose!</b>`);
         displayActionButtons();
     });
 
     game.ee.on('victory', () => {
         logger('=== VICTORY ===');
-        logger(`You win!`);
+        logger(`<b green>You win!</b>`);
         displayActionButtons();
     });
 
@@ -176,8 +176,11 @@ function displayActionButtons(reset = true, retry = true, backToTop = true) {
     loggerActions.className = '';
 
     if (retry) {
-        url.searchParams.set('seed', game.args.seed);
         url.searchParams.set('class', game.player.id);
+        url.searchParams.set('seed', game.args.seed);
+        window.urlReplay = url.href;
+
+        url.searchParams.set('seed', '');
         window.urlRetry = url.href;
         loggerActions.classList.add('retry');
     }

@@ -6,12 +6,22 @@ body {
 
 button {
     text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+b[red] {
+    color: #c92a2a;
+}
+
+b[green] {
+    color: #2b8a3e;
 }
 
 #logger #logger-actions > * {
     display: none;
 }
 
+#logger #logger-actions.retry .btn-replay,
 #logger #logger-actions.retry .btn-retry {
     display: inline-block;
 }
