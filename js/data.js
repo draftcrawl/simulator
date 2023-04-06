@@ -145,7 +145,7 @@ data.class.monk = {
         // hit 2 creatures at once
         game.ee.on('get_number_of_targets', function (evt) {
             if ('player:attack' !== evt.type) return;
-            evt.quantity = 2;
+            evt.quantity = 3;
         });
     },
 };
@@ -191,7 +191,7 @@ data.creature.grunt = {
         bonus: 3,
         fixed: true,
     },
-    hitPoints: 11,
+    hitPoints: 9,
 };
 
 data.creature.brute = {
@@ -202,7 +202,7 @@ data.creature.brute = {
         bonus: 6,
         fixed: true,
     },
-    hitPoints: 14,
+    hitPoints: 13,
 };
 
 // BOSS
@@ -214,9 +214,8 @@ data.boss = {
         bonus: 3,
         fixed: false,
     },
-    hitPoints: {
-        min: 25,
-        max: 30,
+    hitPoints() {
+        return roll() + 20;
     },
 };
 
@@ -318,7 +317,7 @@ data.summoning.spiritualBeast = {
         bonus: 0,
         fixed: false,
     },
-    hitPoints: 5,
+    hitPoints: 4,
 };
 
 // POTION
@@ -330,7 +329,7 @@ data.potion = {
 // TRAP
 data.trap = {
     damage: {
-        bonus: 2,
+        bonus: 0,
         fixed: false,
     },
 };
