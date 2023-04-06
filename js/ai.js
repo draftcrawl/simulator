@@ -78,7 +78,7 @@ function decidePlayerAction() {
         'wizard' !== player.id &&
         !facingEnemy('grunt') &&
         facingEnemy('peon') &&
-        countEnemies('peon') <= 2
+        countEnemies('peon') === 1
     ) {
         return attackEnemies();
     }
@@ -86,7 +86,7 @@ function decidePlayerAction() {
     if (
         hasSpell('summonBeast') &&
         !hasBeast() &&
-        (facingEnemy('boss') || countEnemies() === 3)
+        (facingEnemy('boss') || countEnemies() >= 2)
     ) {
         // think before spend scroll of summon beast
         return castSpell('summonBeast');
