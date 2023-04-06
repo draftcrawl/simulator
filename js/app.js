@@ -32,7 +32,7 @@ if (!winrate) {
         logger(
             'Win Rate: ' + `${((state.win / state.total) * 100).toFixed(1)}%`
         );
-        setTimeout(() => reload(), 2000);
+        setTimeout(() => reload(), 1000);
     }
     function reload() {
         window.location = location.href;
