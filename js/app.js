@@ -26,7 +26,7 @@ if (!winrate) {
 
     function displayResults() {
         //loggerReset();
-        displayActionButtons(true, false, false);
+        // displayActionButtons(true, false, false);
         logger('=== Results ===');
         logger('Class: ' + playerClass.name);
         logger(
