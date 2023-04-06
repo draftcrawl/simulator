@@ -204,7 +204,7 @@ data.creature.brute = {
         bonus: 6,
         fixed: true,
     },
-    hitPoints: 13,
+    hitPoints: 14,
 };
 
 // BOSS
