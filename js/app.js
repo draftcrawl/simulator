@@ -2,14 +2,30 @@ const urlParams = new URLSearchParams(window.location.search);
 const winrate = urlParams.get('winrate');
 
 if (!winrate) {
-    createGame({
-        seed: urlParams.get('seed'),
-        gm: urlParams.get('gm'),
-        playerClass: urlParams.get('class') || undefined,
-        debug: urlParams.get('debug'),
-        actionInterval: urlParams.get('i') || 25,
-        beforeInit: browserUI,
-    });
+    const playerClass = urlParams.get('class');
+    seed = parseInt(urlParams.get('seed'), 10);
+
+    if (!playerClass) {
+        const painel = document.querySelector('.painel');
+        painel.style.display = 'block';
+        if (playerClass) {
+            painel.querySelector('#player-class').value = playerClass;
+        }
+        painel.querySelector('#game-seed').value = seed || '';
+    } else {
+        try {
+            createGame({
+                seed: seed,
+                // gm: urlParams.get('gm'),
+                playerClass: playerClass,
+                debug: urlParams.get('debug'),
+                actionInterval: urlParams.get('i') || 25,
+                beforeInit: browserUI,
+            });
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
+    }
 } else {
     const total = 250;
     const playerClass = getClass(winrate);
@@ -42,9 +58,8 @@ if (!winrate) {
             return displayResults();
         }
         createGame({
-            gm: urlParams.get('gm'),
+            // gm: urlParams.get('gm'),
             playerClass: playerClass.id,
-            debug: urlParams.get('debug'),
             actionInterval: 0,
             beforeInit: (game) => {
                 // browserUI(game);

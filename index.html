@@ -5,32 +5,62 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>draftCrawl Run Simulator</title>
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/@picocss/pico@1.*/css/pico.classless.min.css"
+        />
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
-        <div id="logger" style="display: none">
-            <div id="logger-content"></div>
-            <div id="logger-actions">
-                <button
-                    class="btn-back-to-top"
-                    onclick="document.documentElement.scrollTop = 0"
-                >
-                    Back to top
-                </button>
-                <button
-                    class="btn-same-seed"
-                    onclick="window.location = urlSameSeed"
-                >
-                    Refresh (same seed)
-                </button>
-                <button
-                    class="btn-random-seed"
-                    onclick="confirm('Are you sure?') && (window.location = urlRandomSeed)"
-                >
-                    Refresh (random seed)
-                </button>
+        <main>
+            <form class="painel" style="display: none">
+                <h3>Setup the game</h3>
+                <fieldset>
+                    <label for="player-class">Player Class</label>
+                    <select name="class" id="player-class">
+                        <option value="swordman">Swordman</option>
+                        <option value="monk">Monk</option>
+                        <option value="rogue">Rogue</option>
+                        <option value="hunter">Hunter</option>
+                        <option value="wizard">Wizard</option>
+                        <option value="alchemist">Alchemist</option>
+                    </select>
+                </fieldset>
+                <fieldset>
+                    <label for="game-seed">Seed</label>
+                    <input
+                        id="game-seed"
+                        type="number"
+                        step="1"
+                        onload="this.value = location.search.seed || Date.now()"
+                    />
+                </fieldset>
+                <button type="submit">Start</button>
+            </form>
+            <div id="logger" style="display: none">
+                <div id="logger-content"></div>
+                <div id="logger-actions">
+                    <button
+                        class="btn-back-to-top"
+                        onclick="document.documentElement.scrollTop = 0"
+                    >
+                        Back to top
+                    </button>
+                    <button
+                        class="btn-retry"
+                        onclick="window.location = urlRetry"
+                    >
+                        Retry
+                    </button>
+                    <button
+                        class="btn-reset"
+                        onclick="confirm('Are you sure?') && (window.location.search = '')"
+                    >
+                        Reset
+                    </button>
+                </div>
             </div>
-        </div>
+        </main>
         <script src="js/rng.js"></script>
         <script src="js/libs.js"></script>
         <script src="js/helpers.js"></script>

@@ -171,29 +171,23 @@ function loggerReset() {
     loggerActions.className = '';
 }
 
-function displayActionButtons(
-    randomSeed = true,
-    sameSeed = true,
-    backToTop = true
-) {
+function displayActionButtons(reset = true, retry = true, backToTop = true) {
     const url = new URL(location.href);
     loggerActions.className = '';
 
-    if (sameSeed) {
+    if (retry) {
         url.searchParams.set('seed', game.args.seed);
-        window.urlSameSeed = url.href;
-        loggerActions.classList.add('same-seed');
+        url.searchParams.set('class', game.player.id);
+        window.urlRetry = url.href;
+        loggerActions.classList.add('retry');
     }
 
-    if (randomSeed) {
-        url.searchParams.set('seed', '');
-        window.urlRandomSeed = url.href;
-        loggerActions.classList.add('random-seed');
+    if (reset) {
+        loggerActions.classList.add('reset');
     }
 
     if (backToTop) {
         loggerActions.classList.add('back-to-top');
-        document.documentElement.scrollTop = 9999999;
     }
 
     loggerActions.style.display = 'block';

@@ -1,17 +1,22 @@
 body {
     font-family: monospace;
     font-size: 16px;
+    text-align: center;
+}
+
+button {
+    text-transform: uppercase;
 }
 
 #logger #logger-actions > * {
     display: none;
 }
 
-#logger #logger-actions.same-seed .btn-same-seed {
+#logger #logger-actions.retry .btn-retry {
     display: inline-block;
 }
 
-#logger #logger-actions.random-seed .btn-random-seed {
+#logger #logger-actions.reset .btn-reset {
     display: inline-block;
 }
 
