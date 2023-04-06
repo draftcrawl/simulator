@@ -23,8 +23,8 @@ function createUnitObject(data) {
         },
     };
 
-    if ('object' === typeof obj.hitPoints) {
-        obj.hitPoints = roll(obj.hitPoints.max, obj.hitPoints.min);
+    if ('function' === typeof obj.hitPoints) {
+        obj.hitPoints = obj.hitPoints();
     }
     obj.hitPointsMax = obj.hitPoints;
 
