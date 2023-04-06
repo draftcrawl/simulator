@@ -8,7 +8,7 @@ function decidePlayerAction() {
     const currentHP = player.hitPoints;
     const missingHP = player.hitPointsMax - currentHP;
     const enemies = scene.enemies;
-    const nextTarget = getTargets(enemies, 1, 'player:atack');
+    const nextTarget = getTargets(enemies, 1, 'player:atack')[0];
 
     // Healing behaviors
     if (player.potions > 0 && currentHP <= nextEnemiesDamage(enemies)) {
