@@ -1,5 +1,7 @@
 global.data = {};
 
+data.VERSION = '0.12.0'; // BETA 12
+
 data.dungeonSize = () => roll() + 6;
 
 // CLASSES
@@ -191,7 +193,7 @@ data.creature.grunt = {
         bonus: 3,
         fixed: true,
     },
-    hitPoints: 9,
+    hitPoints: 10,
 };
 
 data.creature.brute = {
