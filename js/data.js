@@ -205,7 +205,7 @@ data.creature.grunt = {
         bonus: 3,
         fixed: true,
     },
-    hitPoints: 10,
+    hitPoints: 11,
 };
 
 data.creature.brute = {
@@ -229,7 +229,7 @@ data.boss = {
         fixed: false,
     },
     hitPoints() {
-        return roll() + 20;
+        return roll() + 18;
     },
 };
 
