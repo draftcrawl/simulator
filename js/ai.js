@@ -40,6 +40,10 @@ function decidePlayerAction() {
         return castSpell('heal');
     }
 
+    if (hasSpell('lightning') && countEnemies('peon') >= 2) {
+        return castSpell('lightning');
+    }
+
     if (MinAttackDamage(player, nextTarget) >= nextTarget.hitPoints) {
         return attackEnemies();
     }
@@ -50,7 +54,7 @@ function decidePlayerAction() {
         facingEnemy('brute') &&
         getEnemy('brute').hitPoints >= 3
     ) {
-        // Alchemist acid againts brutes or boss
+        // Alchemist acid vs brute or boss
         // throw acid in Brutes
         const target = getEnemy('brute');
         return throwAcid(target);
@@ -60,17 +64,12 @@ function decidePlayerAction() {
         facingEnemy('boss') &&
         getEnemy('boss').hitPoints >= 3
     ) {
-        // throw acid in Boss
+        // always try to throw acid in Boss
         const target = getEnemy('boss');
         return throwAcid(target);
     }
 
-    if (hasSpell('lightning') && countEnemies('peon') >= 2) {
-        return castSpell('lightning');
-    } else if (
-        hasSpell('lifeDrain') &&
-        missingHP >= data.spell.lifeDrain.recover
-    ) {
+    if (hasSpell('lifeDrain') && missingHP >= data.spell.lifeDrain.recover) {
         return castSpell('lifeDrain');
     }
 
@@ -86,7 +85,7 @@ function decidePlayerAction() {
     if (
         hasSpell('summonBeast') &&
         !hasBeast() &&
-        (facingEnemy('boss') || countEnemies() >= 2)
+        (facingEnemy('boss', 'brute') || countEnemies() >= 2)
     ) {
         // think before spend scroll of summon beast
         return castSpell('summonBeast');
@@ -180,7 +179,11 @@ function MinAttackDamage(source, target = null) {
     const amount = source.damage.fixed
         ? source.damage.bonus
         : 1 + source.damage.bonus;
-    const eventData = { source, target, amount };
+    const eventData = {
+        source,
+        target,
+        amount,
+    };
     game.ee.emit('min_attack_damage', eventData);
     return eventData.amount;
 }
@@ -189,7 +192,11 @@ function MaxAttackDamage(source, target = null) {
     const amount = source.damage.fixed
         ? source.damage.bonus
         : 6 + source.damage.bonus;
-    const eventData = { source, target, amount };
+    const eventData = {
+        source,
+        target,
+        amount,
+    };
     game.ee.emit('max_attack_damage', eventData);
     return eventData.amount;
 }

@@ -171,7 +171,7 @@ data.class.alchemist = {
         bonus: 1,
         fixed: false,
     },
-    damageAcid: 8,
+    damageAcid: 10,
     startingPotions: 2,
     special: () =>
         `Starts with ${data.class.alchemist.startingPotions} potions. You can turn 1 potion into 1 acid (deal 1d6+${data.class.alchemist.damageAcid} damage).`,
@@ -343,7 +343,7 @@ data.potion = {
 // TRAP
 data.trap = {
     damage: {
-        bonus: 0,
+        bonus: 2,
         fixed: false,
     },
 };

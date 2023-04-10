@@ -26,14 +26,12 @@ function browserUI(game) {
     });
 
     game.ee.on('game_over', () => {
-        logger('=== Game Over ===');
-        logger(`<b red>You lose!</b>`);
+        logger(`<b red>DEFEAT</b>`);
         displayActionButtons();
     });
 
     game.ee.on('victory', () => {
-        logger('=== VICTORY ===');
-        logger(`<b green>You win!</b>`);
+        logger(`<b green>VICTORY</b>`);
         displayActionButtons();
     });
 
