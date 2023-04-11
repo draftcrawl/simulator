@@ -1,6 +1,6 @@
 global.data = {};
 
-data.VERSION = '0.12.0'; // BETA 12
+data.VERSION = '0.13.0'; // BETA
 
 data.dungeonSize = () => roll() + 6;
 
@@ -83,10 +83,10 @@ data.class.hunter = {
     id: 'hunter',
     hitPoints: 20,
     damage: {
-        bonus: 1,
+        bonus: 2,
         fixed: false,
     },
-    firstAttackBonus: 5,
+    firstAttackBonus: 3,
     special: () =>
         `In every combat, your first attack deal +${data.class.hunter.firstAttackBonus} damage.`,
     init() {
@@ -331,7 +331,7 @@ data.summoning.spiritualBeast = {
         bonus: 0,
         fixed: false,
     },
-    hitPoints: 4,
+    hitPoints: 5,
 };
 
 // POTION
