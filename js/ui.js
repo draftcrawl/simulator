@@ -170,10 +170,18 @@ function loggerReset() {
 }
 
 function displayActionButtons(reset = true, retry = true, backToTop = true) {
-    const url = new URL(location.href);
+    let url = new URL(location.href);
     loggerActions.className = '';
 
+    url.searchParams.set('winrate', game.player.id);
+    if (game.args.mods.includes('turbo')) {
+        url.searchParams.append('mods', 'turbo');
+    }
+    window.urlWinrate = url.href;
+    loggerActions.querySelector('.btn-winrate').style.display = 'block';
+
     if (retry) {
+        url = new URL(location.href);
         url.searchParams.set('class', game.player.id);
         url.searchParams.set('seed', game.args.seed);
         window.urlReplay = url.href;
