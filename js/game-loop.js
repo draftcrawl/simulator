@@ -17,8 +17,9 @@ function createGame(args) {
             this.dungeonSize = data.dungeonSize();
             this.sceneCount = 1;
 
-            if (args.beforeInit) args.beforeInit(this);
+            global.data = getData();
 
+            if (args.beforeInit) args.beforeInit(this);
             this.ee.emit('game_init');
 
             this.run();
@@ -89,6 +90,7 @@ function createGame(args) {
             args.gm = !!args.gm;
             args.actionInterval = parseInt(args.actionInterval, 10) | 0;
             args.beforeInit = isFunction(args.beforeInit);
+            args.mods = (args.mods || []).map((val) => (val || '').trim());
             return args;
         },
     };

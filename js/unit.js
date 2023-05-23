@@ -38,6 +38,7 @@ function createPlayer(id) {
     obj.spellsCast = {};
     obj.scrolls = {};
     obj.potions = 0;
+    obj.maxActions = game.args.mods.includes('turbo') ? 2 : 1;
     game.ee.emit('player_created', { player: obj });
     return obj;
 }

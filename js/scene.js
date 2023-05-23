@@ -33,7 +33,9 @@ async function createCombat() {
 
         game.ee.emit('combat_round_start', { number: round });
 
-        decidePlayerAction();
+        for (let i = 0; i < player.maxActions; i++) {
+            decidePlayerAction();
+        }
 
         for (const unit of game.scene.allies) {
             if (unit.dead || 'class' === unit.type) continue;

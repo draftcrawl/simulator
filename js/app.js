@@ -1,5 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const winrate = urlParams.get('winrate');
+const mods = urlParams.getAll('mods') || [];
 
 if (!winrate) {
     const playerClass = urlParams.get('class');
@@ -17,20 +18,23 @@ if (!winrate) {
                 playerClass: playerClass,
                 debug: urlParams.get('debug'),
                 actionInterval: urlParams.get('i') || 25,
-                beforeInit: browserUI,
+                beforeInit: (game) => {
+                    browserUI(game);
+                    setupMods(game.args.mods);
+                },
+                mods,
             });
         } catch (error) {
             alert('Error: ' + error.message);
         }
     }
 } else {
-    const total = 250;
+    const total = 100;
     const playerClass = getClass(winrate);
     global.state = {
         win: 0,
         lose: 0,
         total,
-        dungeonSize: 0,
         count: 0,
     };
 
@@ -42,6 +46,7 @@ if (!winrate) {
         // displayActionButtons(true, false, false);
         logger('=== Results ===');
         logger('Class: ' + playerClass.name);
+        // if (mods.length > 0) logger('Mods: ' + mods.join(', '));
         logger(
             'Win Rate: ' + `${((state.win / state.total) * 100).toFixed(1)}%`
         );
@@ -56,10 +61,12 @@ if (!winrate) {
         }
         createGame({
             // gm: urlParams.get('gm'),
+            mods,
             playerClass: playerClass.id,
             actionInterval: 0,
             beforeInit: (game) => {
                 // browserUI(game);
+                setupMods(game.args.mods);
                 game.ee.on('game_over', () => {
                     state.lose++;
                     state.count++;
@@ -68,7 +75,6 @@ if (!winrate) {
                 game.ee.on('victory', () => {
                     state.win++;
                     state.count++;
-                    state.dungeonSize += game.dungeonSize;
                     simulate();
                 });
             },

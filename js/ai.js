@@ -10,6 +10,18 @@ function decidePlayerAction() {
     const enemies = scene.enemies;
     const nextTarget = getTargets(enemies, 1, 'player:atack')[0];
 
+    if (!nextTarget) {
+        // maybe just heal
+        if (player.potions > 0 && missingHP >= data.potion.recover) {
+            // Drink potion when facing only one peon
+            return drinkPotion();
+        } else if (hasSpell('heal')) {
+            return castSpell('heal');
+        } else {
+            return;
+        }
+    }
+
     // Healing behaviors
     if (player.potions > 0 && currentHP <= nextEnemiesDamage(enemies)) {
         // Drink potion to not die

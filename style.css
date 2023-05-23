@@ -21,6 +21,10 @@ b[green] {
     display: none;
 }
 
+.painel label {
+    font-weight: bold;
+}
+
 #logger #logger-actions.retry .btn-replay,
 #logger #logger-actions.retry .btn-retry {
     display: inline-block;
